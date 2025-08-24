@@ -1,0 +1,24 @@
+# aimap configuration file
+# Copy this file to .aimap.yml and customize for your project
+
+# Source directory for rule files
+source: .rules
+
+# Agents to build for (default: all)
+# Available: claude, cline, roocode, cursor, windsurf, codex
+agents:
+  - claude
+  - cline
+  - roocode
+  - cursor
+  - windsurf
+  - codex
+
+# Custom output paths (optional)
+# outputs:
+#   claude: CLAUDE.md
+#   cline: .clinerules
+#   roocode: .roo/rules
+#   cursor: .cursor/rules
+#   windsurf: .windsurf/rules
+#   codex: AGENTS.md

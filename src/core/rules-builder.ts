@@ -1,37 +1,47 @@
-import {existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync} from 'node:fs'
-import {join, basename} from 'node:path'
-import {createHash} from 'node:crypto'
 import {execSync} from 'node:child_process'
+import {createHash} from 'node:crypto'
+import {copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
+import {join} from 'node:path'
 import * as yaml from 'yaml'
 
 export interface RulesBuilderOptions {
-  sourceDir: string
   agents?: string[]
-  verbose: boolean
   dryRun: boolean
+  outputs?: {
+    claude?: string
+    cline?: string
+    codex?: string
+    cursor?: string
+    roocode?: string
+    windsurf?: string
+  }
+  sourceDir: string
+  verbose: boolean
 }
 
 export interface RuleFile {
-  path: string
-  name: string
   content: string
+  name: string
+  path: string
   title?: string
 }
 
 const SUPPORTED_AGENTS = ['claude', 'cline', 'roocode', 'cursor', 'windsurf', 'codex']
 
 export class RulesBuilder {
-  private sourceDir: string
   private agents: string[]
-  private verbose: boolean
   private dryRun: boolean
+  private outputs: RulesBuilderOptions['outputs']
   private ruleFiles: RuleFile[] = []
+  private sourceDir: string
+  private verbose: boolean
 
   constructor(options: RulesBuilderOptions) {
     this.sourceDir = options.sourceDir
     this.agents = options.agents || SUPPORTED_AGENTS
     this.verbose = options.verbose
     this.dryRun = options.dryRun
+    this.outputs = options.outputs
   }
 
   async build(): Promise<void> {
@@ -61,7 +71,7 @@ export class RulesBuilder {
 
     // 5. Build for each agent
     for (const agent of this.agents) {
-      await this.buildForAgent(agent)
+      this.buildForAgent(agent)
     }
 
     // 6. Save build hash
@@ -71,112 +81,9 @@ export class RulesBuilder {
     this.printSummary()
   }
 
-  private loadRuleFiles(): void {
-    const files = readdirSync(this.sourceDir)
-      .filter(file => file.endsWith('.md') || file.endsWith('.yaml'))
-      .sort()
-
-    for (const file of files) {
-      const path = join(this.sourceDir, file)
-      const content = readFileSync(path, 'utf-8')
-      
-      let title: string | undefined
-      if (file.endsWith('.md')) {
-        // Extract first heading
-        const match = content.match(/^#\s+(.+)$/m)
-        title = match ? match[1] : undefined
-      }
-
-      this.ruleFiles.push({
-        path,
-        name: file,
-        content,
-        title,
-      })
-
-      if (this.verbose) {
-        this.log(`   • ${file}${title ? ` - ${title}` : ''}`)
-      }
-    }
-  }
-
-  private updateMetadata(): void {
-    const metaFile = join(this.sourceDir, '00-meta.yaml')
-    if (!existsSync(metaFile)) {
-      return
-    }
-
-    const content = readFileSync(metaFile, 'utf-8')
-    const meta = yaml.parse(content)
-    
-    meta.build_timestamp = new Date().toISOString()
-    meta.build_hash = this.generateHash()
-
-    if (!this.dryRun) {
-      writeFileSync(metaFile, yaml.stringify(meta))
-      this.log(`✅ Metadata updated (hash: ${meta.build_hash.substring(0, 8)}...)`)
-    }
-  }
-
-  private generateHash(): string {
-    const hash = createHash('sha256')
-    
-    for (const file of this.ruleFiles) {
-      hash.update(file.content)
-    }
-    
-    return hash.digest('hex')
-  }
-
-  private cleanExistingOutputs(): void {
-    this.log('🧹 Cleaning existing outputs...')
-    
-    const cleanupPaths = [
-      'CLAUDE.md',
-      'AGENTS.md',
-      '.clinerules',
-      '.roo/rules',
-      '.cursor/rules',
-      '.windsurf/rules',
-    ]
-
-    for (const path of cleanupPaths) {
-      if (existsSync(path)) {
-        execSync(`rm -rf ${path}`)
-        if (this.verbose) {
-          this.log(`   ✅ Removed ${path}`)
-        }
-      }
-    }
-  }
-
-  private async buildForAgent(agent: string): Promise<void> {
-    switch (agent) {
-      case 'claude':
-        this.buildClaude()
-        break
-      case 'cline':
-        this.buildCline()
-        break
-      case 'roocode':
-        this.buildRooCode()
-        break
-      case 'cursor':
-        this.buildCursor()
-        break
-      case 'windsurf':
-        this.buildWindsurf()
-        break
-      case 'codex':
-        this.buildCodex()
-        break
-      default:
-        this.log(`⚠️  Unknown agent: ${agent}`)
-    }
-  }
-
   private buildClaude(): void {
     this.log('🤖 Building for Claude Code...')
+    const outputPath = this.outputs?.claude || 'CLAUDE.md'
     
     const content = [
       '# aimap Development Rules',
@@ -200,34 +107,20 @@ export class RulesBuilder {
     content.push('', '## Metadata', '', 'See @.rules/00-meta.yaml for build metadata.')
 
     if (!this.dryRun) {
-      writeFileSync('CLAUDE.md', content.join('\n'))
+      writeFileSync(outputPath, content.join('\n'))
     }
     
-    this.log('   ✅ CLAUDE.md created')
+    this.log(`   ✅ ${outputPath} created`)
   }
 
   private buildCline(): void {
     this.log('🤖 Building for Cline...')
-    this.copyRulesToDir('.clinerules')
-  }
-
-  private buildRooCode(): void {
-    this.log('🤖 Building for RooCode...')
-    this.copyRulesToDir('.roo/rules')
-  }
-
-  private buildCursor(): void {
-    this.log('🤖 Building for Cursor...')
-    this.copyRulesToDir('.cursor/rules')
-  }
-
-  private buildWindsurf(): void {
-    this.log('🤖 Building for Windsurf...')
-    this.copyRulesToDir('.windsurf/rules')
+    this.copyRulesToDir(this.outputs?.cline || '.clinerules')
   }
 
   private buildCodex(): void {
-    this.log('🤖 Building for Codex (AGENTS.md)...')
+    const outputPath = this.outputs?.codex || 'AGENTS.md'
+    this.log(`🤖 Building for Codex (${outputPath})...`)
     
     const content = [
       '---',
@@ -257,25 +150,95 @@ export class RulesBuilder {
     // Add all rule contents
     id = 1
     for (const file of this.ruleFiles.filter(f => f.name.endsWith('.md'))) {
-      content.push(`# ${file.title || file.name} \`(R-${String(id).padStart(2, '0')})\``)
-      content.push('')
-      content.push(`> **Source:** ${file.name}`)
-      content.push('')
+      content.push(`# ${file.title || file.name} \`(R-${String(id).padStart(2, '0')})\``, '', `> **Source:** ${file.name}`, '')
       
       // Skip first line if it's a heading
       const lines = file.content.split('\n')
       const startIndex = lines[0].startsWith('#') ? 1 : 0
-      content.push(...lines.slice(startIndex))
-      
-      content.push('', '---', '')
+      content.push(...lines.slice(startIndex), '', '---', '')
       id++
     }
 
     if (!this.dryRun) {
-      writeFileSync('AGENTS.md', content.join('\n'))
+      writeFileSync(outputPath, content.join('\n'))
     }
     
-    this.log('   ✅ AGENTS.md created')
+    this.log(`   ✅ ${outputPath} created`)
+  }
+
+  private buildCursor(): void {
+    this.log('🤖 Building for Cursor...')
+    this.copyRulesToDir(this.outputs?.cursor || '.cursor/rules')
+  }
+
+  private buildForAgent(agent: string): void {
+    switch (agent) {
+      case 'claude': {
+        this.buildClaude()
+        break
+      }
+
+      case 'cline': {
+        this.buildCline()
+        break
+      }
+
+      case 'codex': {
+        this.buildCodex()
+        break
+      }
+
+      case 'cursor': {
+        this.buildCursor()
+        break
+      }
+
+      case 'roocode': {
+        this.buildRooCode()
+        break
+      }
+
+      case 'windsurf': {
+        this.buildWindsurf()
+        break
+      }
+
+      default: {
+        this.log(`⚠️  Unknown agent: ${agent}`)
+      }
+    }
+  }
+
+  private buildRooCode(): void {
+    this.log('🤖 Building for RooCode...')
+    this.copyRulesToDir(this.outputs?.roocode || '.roo/rules')
+  }
+
+  private buildWindsurf(): void {
+    this.log('🤖 Building for Windsurf...')
+    this.copyRulesToDir(this.outputs?.windsurf || '.windsurf/rules')
+  }
+
+  private cleanExistingOutputs(): void {
+    this.log('🧹 Cleaning existing outputs...')
+    
+    const cleanupPaths = [
+      this.outputs?.claude || 'CLAUDE.md',
+      this.outputs?.codex || 'AGENTS.md',
+      this.outputs?.cline || '.clinerules',
+      this.outputs?.roocode || '.roo/rules',
+      this.outputs?.cursor || '.cursor/rules',
+      this.outputs?.windsurf || '.windsurf/rules',
+    ]
+
+    for (const path of cleanupPaths) {
+      if (existsSync(path)) {
+        execSync(`rm -rf "${path}"`)
+        if (this.verbose) {
+          this.log(`   ✅ Removed ${path}`)
+        }
+      }
+    }
   }
 
   private copyRulesToDir(targetDir: string): void {
@@ -291,15 +254,47 @@ export class RulesBuilder {
     this.log(`   ✅ Rules copied to ${targetDir}`)
   }
 
-  private saveBuildHash(): void {
-    const hash = this.generateHash()
-    const hashFile = join(this.sourceDir, '.build_hash')
+  private generateHash(): string {
+    const hash = createHash('sha256')
     
-    if (!this.dryRun) {
-      writeFileSync(hashFile, hash)
+    for (const file of this.ruleFiles) {
+      hash.update(file.content)
     }
     
-    this.log(`🔒 Build hash saved: ${hash.substring(0, 16)}...`)
+    return hash.digest('hex')
+  }
+
+  private loadRuleFiles(): void {
+    const files = readdirSync(this.sourceDir)
+      .filter(file => file.endsWith('.md') || file.endsWith('.yaml'))
+      .sort()
+
+    for (const file of files) {
+      const path = join(this.sourceDir, file)
+      const content = readFileSync(path, 'utf8')
+      
+      let title: string | undefined
+      if (file.endsWith('.md')) {
+        // Extract first heading
+        const match = content.match(/^#\s+(.+)$/m)
+        title = match ? match[1] : undefined
+      }
+
+      this.ruleFiles.push({
+        content,
+        name: file,
+        path,
+        title,
+      })
+
+      if (this.verbose) {
+        this.log(`   • ${file}${title ? ` - ${title}` : ''}`)
+      }
+    }
+  }
+
+  private log(message: string): void {
+    console.log(message)
   }
 
   private printSummary(): void {
@@ -316,25 +311,61 @@ export class RulesBuilder {
       if (this.agents.includes('claude')) {
         console.log('   • CLAUDE.md - Claude Code (@ import syntax)')
       }
+
       if (this.agents.includes('cline')) {
         console.log('   • .clinerules/ - Cline')
       }
+
       if (this.agents.includes('roocode')) {
         console.log('   • .roo/rules/ - RooCode')
       }
+
       if (this.agents.includes('cursor')) {
         console.log('   • .cursor/rules/ - Cursor')
       }
+
       if (this.agents.includes('windsurf')) {
         console.log('   • .windsurf/rules/ - Windsurf')
       }
+
       if (this.agents.includes('codex')) {
         console.log('   • AGENTS.md - Codex')
       }
     }
   }
 
-  private log(message: string): void {
-    console.log(message)
+  private saveBuildHash(): void {
+    const hash = this.generateHash()
+    const hashFile = join(this.sourceDir, '.build_hash')
+    
+    if (!this.dryRun) {
+      writeFileSync(hashFile, hash)
+    }
+    
+    this.log(`🔒 Build hash saved: ${hash.slice(0, 16)}...`)
+  }
+
+  private updateMetadata(): void {
+    const metaFile = join(this.sourceDir, '00-meta.yaml')
+    if (!existsSync(metaFile)) {
+      return
+    }
+
+    const content = readFileSync(metaFile, 'utf8')
+    const meta = yaml.parse(content) as {
+      [key: string]: unknown
+      build_hash?: string
+      build_timestamp?: string
+    }
+    
+    // eslint-disable-next-line camelcase
+    meta.build_timestamp = new Date().toISOString()
+    // eslint-disable-next-line camelcase
+    meta.build_hash = this.generateHash()
+
+    if (!this.dryRun) {
+      writeFileSync(metaFile, yaml.stringify(meta))
+      this.log(`✅ Metadata updated (hash: ${meta.build_hash.slice(0, 8)}...)`)
+    }
   }
 }

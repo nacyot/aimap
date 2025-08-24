@@ -7,11 +7,3 @@ _.file = [".env", ".env.local"]
 [tasks.release]
 run = "npm run changeset:publish"
 description = "Release a new version of the package"
-
-[tasks.build-rules]
-run = "npx . generate"
-description = "Build coding agent rules using aimap CLI"
-
-[tasks."build:rules"]
-run = "npx . generate"
-description = "Build coding agent rules using aimap CLI (alias)"

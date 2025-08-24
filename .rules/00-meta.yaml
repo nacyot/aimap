@@ -1,8 +1,0 @@
-schema_version: 1
-project: aimap
-description: AI-powered interactive map generation and visualization CLI
-last_updated: 2025-08-24
-authors:
-  - nacyot
-build_timestamp: 2025-08-24T22:53:09.367Z
-build_hash: b2718bad8b42a56e5b57000bd8f856b9c2aa05472653a1cf5c417f1abd691203
