@@ -32,3 +32,12 @@ oclif.manifest.json
 
 # tmp
 tmp/
+
+# Generated rule files
+CLAUDE.md
+AGENTS.md
+.clinerules/
+.roo/
+.cursor/
+.windsurf/
+.rules/.build_hash

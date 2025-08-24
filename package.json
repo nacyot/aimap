@@ -1,6 +1,6 @@
 {
   "name": "aimap",
-  "description": "AI-powered interactive map generation and visualization CLI",
+  "description": "Universal build tool for managing coding agent rules",
   "version": "0.0.1",
   "author": "nacyot <propellerheaven@gmail.com>",
   "bin": {

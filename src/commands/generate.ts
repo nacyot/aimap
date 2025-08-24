@@ -1,44 +1,52 @@
 import {Args, Command, Flags} from '@oclif/core'
+import {RulesBuilder} from '../core/rules-builder.js'
 
 export default class Generate extends Command {
-  static description = 'Generate an interactive map from input data'
+  static description = 'Build coding agent rules from .rules directory'
 
   static examples = [
-    '<%= config.bin %> <%= command.id %> data.json',
-    '<%= config.bin %> <%= command.id %> --format yaml data.yaml',
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --source ./custom/.rules',
+    '<%= config.bin %> <%= command.id %> --agents claude,cursor',
   ]
 
   static flags = {
-    format: Flags.string({
-      char: 'f',
-      description: 'Input data format',
-      options: ['json', 'yaml', 'csv'],
-      default: 'json',
+    source: Flags.string({
+      char: 's',
+      description: 'Source directory for rules',
+      default: '.rules',
     }),
-    output: Flags.string({
-      char: 'o',
-      description: 'Output file path',
+    agents: Flags.string({
+      char: 'a',
+      description: 'Comma-separated list of agents to build for',
+      default: 'all',
     }),
-    interactive: Flags.boolean({
-      char: 'i',
-      description: 'Enable interactive mode',
-      default: true,
+    verbose: Flags.boolean({
+      char: 'v',
+      description: 'Verbose output',
+      default: false,
     }),
-  }
-
-  static args = {
-    input: Args.string({
-      description: 'Input data file',
-      required: false,
+    dry: Flags.boolean({
+      description: 'Dry run (show what would be built)',
+      default: false,
     }),
   }
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(Generate)
+    const {flags} = await this.parse(Generate)
 
-    this.log(`Generating map from ${args.input || 'stdin'} (format: ${flags.format})`)
-    
-    // TODO: Implement map generation logic
-    this.log('Map generation not yet implemented')
+    const builder = new RulesBuilder({
+      sourceDir: flags.source,
+      agents: flags.agents === 'all' ? undefined : flags.agents.split(','),
+      verbose: flags.verbose,
+      dryRun: flags.dry,
+    })
+
+    try {
+      await builder.build()
+      this.log('✅ Rules build completed successfully!')
+    } catch (error) {
+      this.error(`Failed to build rules: ${error}`, {exit: 1})
+    }
   }
 }
