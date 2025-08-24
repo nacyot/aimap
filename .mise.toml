@@ -1,0 +1,9 @@
+[tools]
+node = "22.18.0"
+
+[env]
+_.file = [".env", ".env.local"]
+
+[tasks.release]
+run = "npm run changeset:publish"
+description = "Release a new version of the package"
