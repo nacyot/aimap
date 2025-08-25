@@ -5,5 +5,5 @@ node = "22.18.0"
 _.file = [".env", ".env.local"]
 
 [tasks.release]
-run = "npm run changeset:publish"
+run = "bash mise/release.sh"
 description = "Release a new version of the package"
