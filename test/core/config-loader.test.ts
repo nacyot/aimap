@@ -17,7 +17,20 @@ describe('ConfigLoader', () => {
     const config = loader.load()
     
     expect(config.source).toBe('.rules')
-    expect(config.agents).toEqual(['claude', 'cline', 'roocode', 'cursor', 'windsurf', 'codex'])
+    expect(config.agents).toEqual([
+      'claude',
+      'cline',
+      'roocode',
+      'cursor',
+      'windsurf',
+      'codex',
+      'copilot',
+      'amazonq',
+      'continue',
+      'aider',
+      'tabnine',
+      'replit',
+    ])
     expect(config.outputs).toBeUndefined()
   })
   
@@ -63,7 +76,20 @@ invalid yaml {
     
     // Should return defaults
     expect(config.source).toBe('.rules')
-    expect(config.agents).toEqual(['claude', 'cline', 'roocode', 'cursor', 'windsurf', 'codex'])
+    expect(config.agents).toEqual([
+      'claude',
+      'cline',
+      'roocode',
+      'cursor',
+      'windsurf',
+      'codex',
+      'copilot',
+      'amazonq',
+      'continue',
+      'aider',
+      'tabnine',
+      'replit',
+    ])
   })
   
   it('should detect if config file exists', () => {

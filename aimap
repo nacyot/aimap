@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Local wrapper to run the oclif CLI without publishing.
+# Usage: ./aimap [command]
+
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+exec node "$SCRIPT_DIR/bin/run.js" "$@"
+

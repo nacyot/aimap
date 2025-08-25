@@ -5,20 +5,24 @@
 source: .rules
 
 # Agents to build for (default: all)
-# Available: claude, cline, roocode, cursor, windsurf, codex
+# Available: claude, cline, roocode, cursor, windsurf, codex,
+#            copilot, amazonq, continue, aider, tabnine, replit
 agents:
-  - claude
-  - cline
-  - roocode
-  - cursor
-  - windsurf
-  - codex
+  - claude      # Claude Code (CLAUDE.md, AGENTS.md)
+  - cline       # Cline (.clinerules/)
+  - roocode     # RooCode (.roo/)
+  - cursor      # Cursor (.cursor/rules, .cursorrules)
+  - windsurf    # Windsurf (.windsurf/rules, .windsurfrules)
+  - codex       # Codex (CODEX.md)
+  - copilot     # GitHub Copilot (.github/copilot-instructions.md)
+  - amazonq     # Amazon Q (.amazonq/rules/)
+  - continue    # Continue.dev (.continuerc.json)
+  - aider       # Aider (.aider.conf.yml)
+  - tabnine     # Tabnine (.tabnine)
+  - replit      # Replit AI (replit.md)
 
 # Custom output paths (optional)
 # outputs:
-#   claude: CLAUDE.md
-#   cline: .clinerules
-#   roocode: .roo/rules
-#   cursor: .cursor/rules
-#   windsurf: .windsurf/rules
-#   codex: AGENTS.md
+#   claude: CUSTOM_CLAUDE.md
+#   cline: .custom-clinerules
+#   copilot: .github/custom-copilot.md

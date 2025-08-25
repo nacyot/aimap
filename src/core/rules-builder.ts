@@ -1,19 +1,17 @@
-import {execSync} from 'node:child_process'
 import {createHash} from 'node:crypto'
-import {copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
+import {existsSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {join} from 'node:path'
 import * as yaml from 'yaml'
+
+import type {BuildContext} from '../agents/types.js'
+
+import {getAgent, getAgentIds} from '../agents/index.js'
 
 export interface RulesBuilderOptions {
   agents?: string[]
   dryRun: boolean
   outputs?: {
-    claude?: string
-    cline?: string
-    codex?: string
-    cursor?: string
-    roocode?: string
-    windsurf?: string
+    [key: string]: string
   }
   sourceDir: string
   verbose: boolean
@@ -26,8 +24,6 @@ export interface RuleFile {
   title?: string
 }
 
-const SUPPORTED_AGENTS = ['claude', 'cline', 'roocode', 'cursor', 'windsurf', 'codex']
-
 export class RulesBuilder {
   private agents: string[]
   private dryRun: boolean
@@ -38,7 +34,7 @@ export class RulesBuilder {
 
   constructor(options: RulesBuilderOptions) {
     this.sourceDir = options.sourceDir
-    this.agents = options.agents || SUPPORTED_AGENTS
+    this.agents = options.agents || getAgentIds()
     this.verbose = options.verbose
     this.dryRun = options.dryRun
     this.outputs = options.outputs
@@ -64,194 +60,48 @@ export class RulesBuilder {
     // 3. Update metadata
     this.updateMetadata()
 
-    // 4. Clean existing outputs
-    if (!this.dryRun) {
-      this.cleanExistingOutputs()
-    }
+    // 4. Build for each agent using registry
+    const buildPromises = this.agents.map(agentId => this.buildForAgent(agentId))
+    await Promise.all(buildPromises)
 
-    // 5. Build for each agent
-    for (const agent of this.agents) {
-      this.buildForAgent(agent)
-    }
-
-    // 6. Save build hash
+    // 5. Save build hash
     this.saveBuildHash()
 
     this.log(`\n🎉 Rules build completed!`)
     this.printSummary()
   }
 
-  private buildClaude(): void {
-    this.log('🤖 Building for Claude Code...')
-    const outputPath = this.outputs?.claude || 'CLAUDE.md'
+  private async buildForAgent(agentId: string): Promise<void> {
+    const agent = getAgent(agentId)
     
-    const content = [
-      '# aimap Development Rules',
-      '',
-      'This file imports all development rules and guidelines for the project.',
-      '',
-      '## Build Information',
-      `- Generated: ${new Date().toISOString()}`,
-      '- Schema Version: 1.0',
-      '',
-      '## Rule Files',
-      '',
-      'The following rules are imported from the `.rules/` directory:',
-      '',
-    ]
-
-    for (const file of this.ruleFiles.filter(f => f.name.endsWith('.md'))) {
-      content.push(`- @${join(this.sourceDir, file.name)}${file.title ? ` - ${file.title}` : ''}`)
+    if (!agent) {
+      this.log(`⚠️  Unknown agent: ${agentId}`)
+      return
     }
 
-    content.push('', '## Metadata', '', 'See @.rules/00-meta.yaml for build metadata.')
-
-    if (!this.dryRun) {
-      writeFileSync(outputPath, content.join('\n'))
-    }
+    this.log(`🤖 Building for ${agent.displayName}...`)
     
-    this.log(`   ✅ ${outputPath} created`)
-  }
-
-  private buildCline(): void {
-    this.log('🤖 Building for Cline...')
-    this.copyRulesToDir(this.outputs?.cline || '.clinerules')
-  }
-
-  private buildCodex(): void {
-    const outputPath = this.outputs?.codex || 'AGENTS.md'
-    this.log(`🤖 Building for Codex (${outputPath})...`)
-    
-    const content = [
-      '---',
-      'title: Project Coding & Process Rules',
-      `version: "${new Date().toISOString().split('T')[0]}"`,
-      'generator: aimap',
-      '---',
-      '',
-      '# 📚 Project Development Rules',
-      '',
-      'This document contains all development rules and guidelines.',
-      '',
-      '## 📋 Index',
-      '',
-      '| ID | Title | File |',
-      '|----|-------|------|',
-    ]
-
-    let id = 1
-    for (const file of this.ruleFiles.filter(f => f.name.endsWith('.md'))) {
-      content.push(`| R-${String(id).padStart(2, '0')} | ${file.title || file.name} | ${file.name} |`)
-      id++
+    // Create build context
+    const context: BuildContext = {
+      dryRun: this.dryRun,
+      files: this.ruleFiles.map(f => f.name),
+      sourceDir: this.sourceDir,
+      verbose: this.verbose,
     }
 
-    content.push('', '---', '')
-
-    // Add all rule contents
-    id = 1
-    for (const file of this.ruleFiles.filter(f => f.name.endsWith('.md'))) {
-      content.push(`# ${file.title || file.name} \`(R-${String(id).padStart(2, '0')})\``, '', `> **Source:** ${file.name}`, '')
+    // If custom output path is specified, we need to handle it
+    // For now, agents manage their own output paths
+    // This could be extended to support custom outputs per agent
+    
+    try {
+      await agent.builder(context)
       
-      // Skip first line if it's a heading
-      const lines = file.content.split('\n')
-      const startIndex = lines[0].startsWith('#') ? 1 : 0
-      content.push(...lines.slice(startIndex), '', '---', '')
-      id++
+      for (const outputPath of agent.outputPaths) {
+        this.log(`   ✅ ${outputPath} created`)
+      }
+    } catch (error) {
+      this.log(`   ❌ Failed to build for ${agent.displayName}: ${error}`)
     }
-
-    if (!this.dryRun) {
-      writeFileSync(outputPath, content.join('\n'))
-    }
-    
-    this.log(`   ✅ ${outputPath} created`)
-  }
-
-  private buildCursor(): void {
-    this.log('🤖 Building for Cursor...')
-    this.copyRulesToDir(this.outputs?.cursor || '.cursor/rules')
-  }
-
-  private buildForAgent(agent: string): void {
-    switch (agent) {
-      case 'claude': {
-        this.buildClaude()
-        break
-      }
-
-      case 'cline': {
-        this.buildCline()
-        break
-      }
-
-      case 'codex': {
-        this.buildCodex()
-        break
-      }
-
-      case 'cursor': {
-        this.buildCursor()
-        break
-      }
-
-      case 'roocode': {
-        this.buildRooCode()
-        break
-      }
-
-      case 'windsurf': {
-        this.buildWindsurf()
-        break
-      }
-
-      default: {
-        this.log(`⚠️  Unknown agent: ${agent}`)
-      }
-    }
-  }
-
-  private buildRooCode(): void {
-    this.log('🤖 Building for RooCode...')
-    this.copyRulesToDir(this.outputs?.roocode || '.roo/rules')
-  }
-
-  private buildWindsurf(): void {
-    this.log('🤖 Building for Windsurf...')
-    this.copyRulesToDir(this.outputs?.windsurf || '.windsurf/rules')
-  }
-
-  private cleanExistingOutputs(): void {
-    this.log('🧹 Cleaning existing outputs...')
-    
-    const cleanupPaths = [
-      this.outputs?.claude || 'CLAUDE.md',
-      this.outputs?.codex || 'AGENTS.md',
-      this.outputs?.cline || '.clinerules',
-      this.outputs?.roocode || '.roo/rules',
-      this.outputs?.cursor || '.cursor/rules',
-      this.outputs?.windsurf || '.windsurf/rules',
-    ]
-
-    for (const path of cleanupPaths) {
-      if (existsSync(path)) {
-        execSync(`rm -rf "${path}"`)
-        if (this.verbose) {
-          this.log(`   ✅ Removed ${path}`)
-        }
-      }
-    }
-  }
-
-  private copyRulesToDir(targetDir: string): void {
-    if (!this.dryRun) {
-      mkdirSync(targetDir, {recursive: true})
-      
-      for (const file of this.ruleFiles.filter(f => f.name.endsWith('.md'))) {
-        const target = join(targetDir, file.name)
-        copyFileSync(file.path, target)
-      }
-    }
-    
-    this.log(`   ✅ Rules copied to ${targetDir}`)
   }
 
   private generateHash(): string {
@@ -308,28 +158,13 @@ export class RulesBuilder {
     } else {
       console.log('\n📂 Generated outputs:')
       
-      if (this.agents.includes('claude')) {
-        console.log('   • CLAUDE.md - Claude Code (@ import syntax)')
-      }
-
-      if (this.agents.includes('cline')) {
-        console.log('   • .clinerules/ - Cline')
-      }
-
-      if (this.agents.includes('roocode')) {
-        console.log('   • .roo/rules/ - RooCode')
-      }
-
-      if (this.agents.includes('cursor')) {
-        console.log('   • .cursor/rules/ - Cursor')
-      }
-
-      if (this.agents.includes('windsurf')) {
-        console.log('   • .windsurf/rules/ - Windsurf')
-      }
-
-      if (this.agents.includes('codex')) {
-        console.log('   • AGENTS.md - Codex')
+      for (const agentId of this.agents) {
+        const agent = getAgent(agentId)
+        if (agent) {
+          for (const outputPath of agent.outputPaths) {
+            console.log(`   • ${outputPath} - ${agent.displayName}`)
+          }
+        }
       }
     }
   }

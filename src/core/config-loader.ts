@@ -4,18 +4,26 @@ import * as yaml from 'yaml'
 export interface AimapConfig {
   agents: string[]
   outputs?: {
-    claude?: string
-    cline?: string
-    codex?: string
-    cursor?: string
-    roocode?: string
-    windsurf?: string
+    [key: string]: string
   }
   source: string
 }
 
 const DEFAULT_CONFIG: AimapConfig = {
-  agents: ['claude', 'cline', 'roocode', 'cursor', 'windsurf', 'codex'],
+  agents: [
+    'claude',
+    'cline',
+    'roocode',
+    'cursor',
+    'windsurf',
+    'codex',
+    'copilot',
+    'amazonq',
+    'continue',
+    'aider',
+    'tabnine',
+    'replit',
+  ],
   source: '.rules',
 }
 
