@@ -93,7 +93,7 @@ describe('Build Command', () => {
     expect(existsSync('CLAUDE.md')).toBe(true)
     
     expect(existsSync('.cursor/rules')).toBe(true) // Directory should exist
-    expect(existsSync('.cursor/rules/01-test.md')).toBe(true) // Check for actual file
+    expect(existsSync('.cursor/rules/01-test.mdc')).toBe(true) // .mdc extension for 2025
   })
   
   it('should load config from .aimap.yml', async () => {

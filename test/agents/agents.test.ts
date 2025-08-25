@@ -93,11 +93,12 @@ describe('Agent Implementations', () => {
         verbose: false,
       })
       
-      // Check .cursor/rules/ directory exists with individual files
+      // Check .cursor/rules/ directory exists with individual .mdc files (2025 requirement)
       expect(existsSync('.cursor/rules')).toBe(true)
       for (const file of testFiles) {
-        expect(existsSync(join('.cursor/rules', file))).toBe(true)
-        const content = readFileSync(join('.cursor/rules', file), 'utf8')
+        const mdcFile = file.replace(/\.md$/, '.mdc')
+        expect(existsSync(join('.cursor/rules', mdcFile))).toBe(true)
+        const content = readFileSync(join('.cursor/rules', mdcFile), 'utf8')
         expect(content).toBe(testContent[file])
       }
       
@@ -169,7 +170,26 @@ describe('Agent Implementations', () => {
         verbose: false,
       })
       
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('32768 bytes'))
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('exceeds 32768 byte limit'))
+      consoleSpy.mockRestore()
+    })
+    
+    it('should warn when approaching 32KB limit', () => {
+      const agent = getAgent('amazonq')
+      const largeFile = '05-approaching.md'
+      const largeContent = 'x'.repeat(29_000) // >28KB warning threshold
+      writeFileSync(join(testSourceDir, largeFile), largeContent)
+      
+      const consoleSpy = vi.spyOn(console, 'warn')
+      
+      agent!.builder({
+        dryRun: false,
+        files: [largeFile],
+        sourceDir: testSourceDir,
+        verbose: false,
+      })
+      
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('approaching 32768 byte limit'))
       consoleSpy.mockRestore()
     })
   })
@@ -296,10 +316,30 @@ describe('Agent Implementations', () => {
       expect(content).toContain('# Testing')
     })
     
-    it('should warn if content exceeds 6KB', () => {
+    it('should throw error if content exceeds 6KB hard limit', () => {
       const agent = getAgent('windsurf')
       const largeFile = '04-large.md'
       const largeContent = 'x'.repeat(7000)
+      writeFileSync(join(testSourceDir, largeFile), largeContent)
+      
+      // Should throw error for content >6KB (hard limit in 2025)
+      expect(() => {
+        agent!.builder({
+          dryRun: false,
+          files: [largeFile],
+          sourceDir: testSourceDir,
+          verbose: false,
+        })
+      }).toThrow('exceeding Windsurf\'s 6000 byte limit')
+      
+      // File should not be created when size exceeds limit
+      expect(existsSync('.windsurfrules')).toBe(false)
+    })
+    
+    it('should warn when approaching 6KB limit', () => {
+      const agent = getAgent('windsurf')
+      const largeFile = '04-large.md'
+      const largeContent = 'x'.repeat(5500) // 90% of limit
       writeFileSync(join(testSourceDir, largeFile), largeContent)
       
       const consoleSpy = vi.spyOn(console, 'warn')
@@ -311,7 +351,7 @@ describe('Agent Implementations', () => {
         verbose: false,
       })
       
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('6000 bytes'))
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('90% of 6000 byte limit'))
       consoleSpy.mockRestore()
     })
   })

@@ -4,6 +4,7 @@ import {join} from 'node:path'
 import type {AgentSpec} from '../types.js'
 
 const MAX_FILE_SIZE = 32_768 // 32KB limit for Amazon Q
+const WARNING_SIZE = 28_672  // Warn at 28KB to leave room for front matter
 
 const amazonq: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
@@ -23,7 +24,10 @@ const amazonq: AgentSpec = {
           const contentSize = Buffer.byteLength(content, 'utf8')
           
           if (contentSize > MAX_FILE_SIZE) {
-            console.warn(`Warning: ${file} is ${contentSize} bytes (max: ${MAX_FILE_SIZE} bytes)`)
+            console.warn(`⚠️  Warning: ${file} is ${contentSize} bytes (exceeds ${MAX_FILE_SIZE} byte limit)`)
+            console.warn('Amazon Q may truncate or ignore this file.')
+          } else if (contentSize > WARNING_SIZE) {
+            console.warn(`⚠️  Warning: ${file} is ${contentSize} bytes (approaching ${MAX_FILE_SIZE} byte limit)`)
           }
           
           writeFileSync(join(outputDir, file), content, 'utf8')

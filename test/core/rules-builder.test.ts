@@ -110,8 +110,8 @@ describe('RulesBuilder', () => {
     
     expect(existsSync('CLAUDE.md')).toBe(true)
     expect(existsSync('.cursor/rules')).toBe(true) // Directory should exist
-    expect(existsSync('.cursor/rules/01-general.md')).toBe(true) // Individual files
-    expect(existsSync('.cursor/rules/02-specific.md')).toBe(true)
+    expect(existsSync('.cursor/rules/01-general.mdc')).toBe(true) // .mdc extension for 2025
+    expect(existsSync('.cursor/rules/02-specific.mdc')).toBe(true)
     expect(existsSync('.cursorrules')).toBe(true) // Legacy file for backward compatibility
   })
   

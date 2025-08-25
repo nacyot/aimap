@@ -3,7 +3,7 @@ import {join} from 'node:path'
 
 import type {AgentSpec} from '../types.js'
 
-const MAX_FILE_SIZE = 6000 // 6KB limit for Windsurf
+const MAX_FILE_SIZE = 6000 // 6KB hard limit for Windsurf (content ignored if exceeded)
 
 const windsurf: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
@@ -19,11 +19,19 @@ const windsurf: AgentSpec = {
         .map(file => readFileSync(join(sourceDir, file), 'utf8'))
         .join('\n\n')
       
-      // Check file size and warn if too large
+      // Check file size - fail if exceeds hard limit (2025: content ignored, not truncated)
       const contentSize = Buffer.byteLength(content, 'utf8')
       if (contentSize > MAX_FILE_SIZE) {
-        console.warn(`Warning: .windsurfrules is ${contentSize} bytes (max: ${MAX_FILE_SIZE} bytes)`)
-        console.warn('Content will be truncated by Windsurf')
+        const error = `Error: Combined rules are ${contentSize} bytes, exceeding Windsurf's ${MAX_FILE_SIZE} byte limit.`
+        console.error(error)
+        console.error('Windsurf will ignore the entire file if it exceeds 6KB.')
+        console.error('Please reduce the size of your rules or exclude some files.')
+        throw new Error(error)
+      }
+      
+      // Warn if approaching limit
+      if (contentSize > MAX_FILE_SIZE * 0.9) {
+        console.warn(`⚠️  Warning: .windsurfrules is ${contentSize} bytes (90% of ${MAX_FILE_SIZE} byte limit)`)
       }
       
       // Write .windsurfrules (official location)
