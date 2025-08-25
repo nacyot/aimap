@@ -17,6 +17,7 @@ vitest.config.ts
 .changeset/
 .notes/
 .rules/
+mise/
 CLAUDE.md
 AGENTS.md
 GEMINI.md
