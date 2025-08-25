@@ -81,6 +81,21 @@ export class RulesBuilder {
 
     this.log(`🤖 Building for ${agent.displayName}...`)
     
+    // Clean before build to prevent orphaned files
+    if (!this.dryRun && agent.clean) {
+      try {
+        agent.clean()
+        if (this.verbose) {
+          this.log(`   🧹 Cleaned existing ${agent.displayName} outputs`)
+        }
+      } catch (error) {
+        // Ignore clean errors (files might not exist)
+        if (this.verbose) {
+          this.log(`   ⏭️  No existing outputs to clean`)
+        }
+      }
+    }
+    
     // Create build context
     const context: BuildContext = {
       dryRun: this.dryRun,
