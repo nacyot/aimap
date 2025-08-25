@@ -5,7 +5,7 @@ import type {AgentSpec} from '../types.js'
 
 const gemini: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
-    const outputFile = 'GEMINI.md'  // 자동으로 읽는 파일
+    const outputFile = 'GEMINI.md'  // Auto-loaded by Gemini CLI
     
     if (verbose) {
       console.log(`Building Gemini CLI rules at ${outputFile}`)
