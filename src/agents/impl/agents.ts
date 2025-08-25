@@ -1,28 +1,23 @@
-import {existsSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {readFileSync, writeFileSync} from 'node:fs'
 import {join} from 'node:path'
 
-import type {AgentSpec} from '../types.js'
+import type {AgentSpec, BuildContext} from '../types.js'
 
-const agents: AgentSpec = {
-  builder({dryRun, files, sourceDir, verbose}) {
-    const outputPath = 'AGENTS.md'
+const agentsSpec: AgentSpec = {
+  builder: (context: BuildContext) => {
+    const {files, sourceDir, dryRun} = context
     
-    if (verbose) {
-      console.log(`Building universal agents rules at ${outputPath}`)
+    // Read all rule files and combine them
+    const sections = []
+    for (const file of files) {
+      const content = readFileSync(join(sourceDir, file), 'utf8')
+      sections.push(content.trim())
     }
-
+    
+    const rulesContent = sections.join('\n\n---\n\n')
+    
     if (!dryRun) {
-      const content = files
-        .filter(file => file.endsWith('.md'))
-        .map(file => readFileSync(join(sourceDir, file), 'utf8'))
-        .join('\n\n')
-      
-      writeFileSync(outputPath, content, 'utf8')
-    }
-  },
-  clean() {
-    if (existsSync('AGENTS.md')) {
-      rmSync('AGENTS.md')
+      writeFileSync('AGENTS.md', rulesContent, 'utf8')
     }
   },
   displayName: 'Universal Agents',
@@ -30,4 +25,4 @@ const agents: AgentSpec = {
   outputPaths: ['AGENTS.md'],
 }
 
-export default agents
+export {agentsSpec as agents}
