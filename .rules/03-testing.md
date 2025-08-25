@@ -1,3 +1,0 @@
-# Testing
-
-Write comprehensive tests.
