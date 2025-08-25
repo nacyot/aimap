@@ -1,3 +1,0 @@
-# Testing
-
-Write unit tests for all functions.
