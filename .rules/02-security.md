@@ -1,0 +1,3 @@
+# Security
+
+Always validate inputs.

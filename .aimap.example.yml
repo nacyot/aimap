@@ -12,7 +12,7 @@ agents:
   - claude      # Claude (CLAUDE.md with @ references)
   - cline       # Cline (.clinerules/)
   - roocode     # RooCode (.roo/rules/)
-  - cursor      # Cursor (.cursor/rules, .cursorrules)
+  - cursor      # Cursor (.cursor/rules/, .cursorrules)
   - windsurf    # Windsurf/Codeium (.windsurfrules)
   - copilot     # GitHub Copilot (.github/instructions/*.instructions.md)
   - amazonq     # Amazon Q Developer (.amazonq/rules/)

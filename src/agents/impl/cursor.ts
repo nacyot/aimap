@@ -5,32 +5,41 @@ import type {AgentSpec} from '../types.js'
 
 const cursor: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
-    const outputDir = '.cursor'
-    const mainRuleFile = join(outputDir, 'rules')
+    const rulesDir = '.cursor/rules'
     
     if (verbose) {
-      console.log(`Building Cursor rules at ${mainRuleFile}`)
+      console.log(`Building Cursor rules at ${rulesDir}/`)
     }
 
     if (!dryRun) {
-      mkdirSync(outputDir, {recursive: true})
+      // Create .cursor/rules/ directory (official 2025 location)
+      mkdirSync(rulesDir, {recursive: true})
       
-      // Create main rules file with all content
-      const content = files
+      // Copy each markdown file to .cursor/rules/ directory
+      // Cursor supports MDC format and loads all files from this directory
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const content = readFileSync(join(sourceDir, file), 'utf8')
+          writeFileSync(join(rulesDir, file), content, 'utf8')
+          
+          if (verbose) {
+            console.log(`Created ${join(rulesDir, file)}`)
+          }
+        }
+      }
+      
+      // Also create .cursorrules for backward compatibility (deprecated but still works)
+      // Combine all rules into single file for legacy support
+      const legacyContent = files
         .filter(file => file.endsWith('.md'))
         .map(file => readFileSync(join(sourceDir, file), 'utf8'))
         .join('\n\n')
       
-      // Write to .cursor/rules (canonical location as of 2025)
-      writeFileSync(mainRuleFile, content, 'utf8')
+      writeFileSync('.cursorrules', legacyContent, 'utf8')
       
-      // Optionally create .cursorrules for backward compatibility
-      // (can be removed once all team members upgrade)
       if (verbose) {
-        console.log('Creating .cursorrules for backward compatibility')
+        console.log('Created .cursorrules for backward compatibility (deprecated)')
       }
-
-      writeFileSync('.cursorrules', content, 'utf8')
     }
   },
   clean() {
@@ -44,7 +53,7 @@ const cursor: AgentSpec = {
   },
   displayName: 'Cursor IDE',
   id: 'cursor',
-  outputPaths: ['.cursor/rules', '.cursorrules'],
+  outputPaths: ['.cursor/rules/', '.cursorrules'],
 }
 
 export default cursor

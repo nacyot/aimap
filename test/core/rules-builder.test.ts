@@ -109,8 +109,10 @@ describe('RulesBuilder', () => {
     await builder.build()
     
     expect(existsSync('CLAUDE.md')).toBe(true)
-    expect(existsSync('.cursor/rules')).toBe(true)
-    expect(existsSync('.cursorrules')).toBe(true) // Cursor also creates .cursorrules
+    expect(existsSync('.cursor/rules')).toBe(true) // Directory should exist
+    expect(existsSync('.cursor/rules/01-general.md')).toBe(true) // Individual files
+    expect(existsSync('.cursor/rules/02-specific.md')).toBe(true)
+    expect(existsSync('.cursorrules')).toBe(true) // Legacy file for backward compatibility
   })
   
   it('should generate build hash', async () => {

@@ -82,7 +82,7 @@ describe('Agent Implementations', () => {
   })
   
   describe('Cursor IDE', () => {
-    it('should create .cursor/rules and .cursorrules', () => {
+    it('should create .cursor/rules/ directory and .cursorrules', () => {
       const agent = getAgent('cursor')
       expect(agent).toBeDefined()
       
@@ -93,17 +93,20 @@ describe('Agent Implementations', () => {
         verbose: false,
       })
       
+      // Check .cursor/rules/ directory exists with individual files
       expect(existsSync('.cursor/rules')).toBe(true)
+      for (const file of testFiles) {
+        expect(existsSync(join('.cursor/rules', file))).toBe(true)
+        const content = readFileSync(join('.cursor/rules', file), 'utf8')
+        expect(content).toBe(testContent[file])
+      }
+      
+      // Check .cursorrules legacy file exists with combined content
       expect(existsSync('.cursorrules')).toBe(true)
-      
-      const content = readFileSync('.cursor/rules', 'utf8')
-      expect(content).toContain('# Coding Style')
-      expect(content).toContain('# Security')
-      expect(content).toContain('# Testing')
-      
-      // Both files should have same content
       const legacyContent = readFileSync('.cursorrules', 'utf8')
-      expect(legacyContent).toBe(content)
+      expect(legacyContent).toContain('# Coding Style')
+      expect(legacyContent).toContain('# Security')
+      expect(legacyContent).toContain('# Testing')
     })
   })
   

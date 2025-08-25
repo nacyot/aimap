@@ -92,7 +92,8 @@ describe('Build Command', () => {
     await Build.run(['--source', testDir, '--agents', 'claude,cursor', '--force'])
     expect(existsSync('CLAUDE.md')).toBe(true)
     
-    expect(existsSync('.cursor/rules')).toBe(true)
+    expect(existsSync('.cursor/rules')).toBe(true) // Directory should exist
+    expect(existsSync('.cursor/rules/01-test.md')).toBe(true) // Check for actual file
   })
   
   it('should load config from .aimap.yml', async () => {
