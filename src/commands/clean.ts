@@ -1,5 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import {existsSync, rmSync} from 'node:fs'
+import {join, resolve} from 'node:path'
 
 import {getAllAgents} from '../agents/index.js'
 import {ConfigLoader} from '../core/config-loader.js'
@@ -20,6 +21,11 @@ export default class Clean extends Command {
       default: '.aimap.yml',
       description: 'Path to aimap config file',
     }),
+    force: Flags.boolean({
+      char: 'f',
+      default: false,
+      description: 'Force clean even if not in project root',
+    }),
     verbose: Flags.boolean({
       char: 'v',
       default: false,
@@ -27,8 +33,34 @@ export default class Clean extends Command {
     }),
   }
 
+  private findProjectRoot(): string | null {
+    let currentDir = process.cwd()
+    const root = resolve('/')
+    
+    while (currentDir !== root) {
+      if (existsSync(join(currentDir, '.git'))) {
+        return currentDir
+      }
+      currentDir = resolve(currentDir, '..')
+    }
+    
+    return null
+  }
+
   public async run(): Promise<void> {
     const {flags} = await this.parse(Clean)
+    
+    // Check if we're in project root
+    const projectRoot = this.findProjectRoot()
+    const currentDir = process.cwd()
+    
+    if (!projectRoot) {
+      this.error('Not in a git repository. Initialize git first with "git init"', {exit: 1})
+    }
+    
+    if (currentDir !== projectRoot && !flags.force) {
+      this.error(`Not in project root. Run from ${projectRoot} or use --force flag`, {exit: 1})
+    }
 
     this.log('🧹 Cleaning generated rule files...')
 
