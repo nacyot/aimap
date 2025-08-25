@@ -10,11 +10,16 @@ export default class Clean extends Command {
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --all',
+    '<%= config.bin %> <%= command.id %> --hash',
   ]
   static flags = {
     all: Flags.boolean({
       default: false,
-      description: 'Remove all generated files including build hash',
+      description: 'Clean outputs for all agents (ignore config)',
+    }),
+    hash: Flags.boolean({
+      default: false,
+      description: 'Remove build hash file',
     }),
     config: Flags.string({
       char: 'c',
@@ -64,14 +69,31 @@ export default class Clean extends Command {
 
     this.log('🧹 Cleaning generated rule files...')
 
-    // Load config to get source directory
+    // Load config to get source directory and agents
     const configLoader = new ConfigLoader(flags.config)
     const config = configLoader.load()
 
     let cleanedCount = 0
 
-    // Clean files for all agents using registry
-    for (const agent of getAllAgents()) {
+    // Get agents to clean based on flags and config
+    const agentsToClean = flags.all
+      ? getAllAgents().map(a => a.id)  // --all flag: clean all agents
+      : config.agents  // Use config agents (defaults to ['claude'] if not specified)
+
+    if (flags.verbose) {
+      this.log(`📋 Cleaning outputs for agents: ${agentsToClean.join(', ')}`)
+    }
+
+    // Clean files for specified agents
+    for (const agentId of agentsToClean) {
+      const agent = getAllAgents().find(a => a.id === agentId)
+      if (!agent) {
+        if (flags.verbose) {
+          this.warn(`   ⚠️  Unknown agent: ${agentId}`)
+        }
+        continue
+      }
+
       if (agent.clean) {
         try {
           agent.clean()
@@ -102,19 +124,21 @@ export default class Clean extends Command {
       }
     }
 
-    // Clean build hash if --all flag is set
-    if (flags.all) {
+    // Clean build hash if --hash flag is set
+    if (flags.hash) {
       const buildHashPath = `${config.source}/.build_hash`
       if (existsSync(buildHashPath)) {
         try {
           rmSync(buildHashPath)
           cleanedCount++
           if (flags.verbose) {
-            this.log(`   ✅ Removed ${buildHashPath}`)
+            this.log(`   ✅ Removed build hash: ${buildHashPath}`)
           }
         } catch (error) {
           this.warn(`Failed to remove ${buildHashPath}: ${error}`)
         }
+      } else if (flags.verbose) {
+        this.log(`   ⏭️  No build hash file to remove`)
       }
     }
 
