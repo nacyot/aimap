@@ -23,6 +23,12 @@ const DEFAULT_CONFIG: AimapConfig = {
     'aider',
     'tabnine',
     'replit',
+    'jetbrains',
+    'cody',
+    'gemini',
+    'pieces',
+    'tabby',
+    'workspace',
   ],
   source: '.rules',
 }

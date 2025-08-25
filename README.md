@@ -81,7 +81,7 @@ outputs:
 
 ## Supported Coding Agents
 
-### Original Agents
+### Core Agents
 - **Claude Code** - Generates `CLAUDE.md` and `AGENTS.md` with `@` import syntax
 - **Cline** - Copies rules to `.clinerules/` directory
 - **RooCode** - Copies rules to `.roo/` directory  
@@ -89,13 +89,21 @@ outputs:
 - **Windsurf** - Generates `.windsurf/rules` and `.windsurfrules` files
 - **Codex** - Generates `CODEX.md` file
 
-### New Agents (2025)
+### Popular Agents (2025)
 - **GitHub Copilot** - Generates `.github/copilot-instructions.md`
 - **Amazon Q** - Copies rules to `.amazonq/rules/` directory
-- **Continue.dev** - Generates `.continuerc.json` with rules in system message
-- **Aider** - Generates `.aider.conf.yml` with conventions
+- **Continue.dev** - Generates `.continue/config.yaml` with rules array
+- **Aider** - Generates `.aider.conf.yml` with read field and `.aider-rules/` directory
 - **Tabnine** - Generates `.tabnine` configuration file
 - **Replit AI** - Generates `replit.md` file
+
+### Enterprise Agents
+- **JetBrains AI Assistant** - Generates `.jbai/rules.md`
+- **Sourcegraph Cody** - Generates `.cody.json` configuration
+- **Google Gemini Code Assist** - Generates `.gemini/rules.yaml`
+- **Pieces for Developers** - Generates `pieces.toml` configuration
+- **Tabby ML** - Generates `tabby.yaml` for self-hosted instances
+- **GitHub Copilot Workspace** - Generates `.workspace/rules.yaml` for workflows
 
 ## Rule Files Structure
 
