@@ -30,7 +30,7 @@ const aider: AgentSpec = {
       }
       
       // Update or create .aider.conf.yml
-      let config: any = {}
+      let config: Record<string, unknown> = {}
       
       // If config exists, preserve existing settings
       if (existsSync(configFile)) {

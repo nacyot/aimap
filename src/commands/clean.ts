@@ -17,10 +17,6 @@ export default class Clean extends Command {
       default: false,
       description: 'Clean outputs for all agents (ignore config)',
     }),
-    hash: Flags.boolean({
-      default: false,
-      description: 'Remove build hash file',
-    }),
     config: Flags.string({
       char: 'c',
       default: '.aimap.yml',
@@ -31,25 +27,15 @@ export default class Clean extends Command {
       default: false,
       description: 'Force clean even if not in project root',
     }),
+    hash: Flags.boolean({
+      default: false,
+      description: 'Remove build hash file',
+    }),
     verbose: Flags.boolean({
       char: 'v',
       default: false,
       description: 'Verbose output',
     }),
-  }
-
-  private findProjectRoot(): string | null {
-    let currentDir = process.cwd()
-    const root = resolve('/')
-    
-    while (currentDir !== root) {
-      if (existsSync(join(currentDir, '.git'))) {
-        return currentDir
-      }
-      currentDir = resolve(currentDir, '..')
-    }
-    
-    return null
   }
 
   public async run(): Promise<void> {
@@ -91,6 +77,7 @@ export default class Clean extends Command {
         if (flags.verbose) {
           this.warn(`   ⚠️  Unknown agent: ${agentId}`)
         }
+
         continue
       }
 
@@ -147,5 +134,20 @@ export default class Clean extends Command {
     } else {
       this.log('ℹ️  Nothing to clean')
     }
+  }
+
+  private findProjectRoot(): null | string {
+    let currentDir = process.cwd()
+    const root = resolve('/')
+    
+    while (currentDir !== root) {
+      if (existsSync(join(currentDir, '.git'))) {
+        return currentDir
+      }
+
+      currentDir = resolve(currentDir, '..')
+    }
+    
+    return null
   }
 }

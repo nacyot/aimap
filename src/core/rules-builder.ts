@@ -88,7 +88,7 @@ export class RulesBuilder {
         if (this.verbose) {
           this.log(`   🧹 Cleaned existing ${agent.displayName} outputs`)
         }
-      } catch (error) {
+      } catch {
         // Ignore clean errors (files might not exist)
         if (this.verbose) {
           this.log(`   ⏭️  No existing outputs to clean`)

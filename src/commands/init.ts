@@ -1,36 +1,20 @@
 import {Command, Flags} from '@oclif/core'
-import {existsSync, copyFileSync} from 'node:fs'
-import {join, resolve, dirname} from 'node:path'
+import {copyFileSync, existsSync} from 'node:fs'
+import {dirname, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 export default class Init extends Command {
   static description = 'Initialize aimap configuration in the current project'
-  
-  static examples = [
+static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --force',
   ]
-  
-  static flags = {
+static flags = {
     force: Flags.boolean({
       char: 'f',
       default: false,
       description: 'Force initialization even if not in project root',
     }),
-  }
-
-  private findProjectRoot(): string | null {
-    let currentDir = process.cwd()
-    const root = resolve('/')
-    
-    while (currentDir !== root) {
-      if (existsSync(join(currentDir, '.git'))) {
-        return currentDir
-      }
-      currentDir = resolve(currentDir, '..')
-    }
-    
-    return null
   }
 
   public async run(): Promise<void> {
@@ -74,5 +58,20 @@ export default class Init extends Command {
     } catch (error) {
       this.error(`Failed to create configuration file: ${error}`, {exit: 1})
     }
+  }
+
+  private findProjectRoot(): null | string {
+    let currentDir = process.cwd()
+    const root = resolve('/')
+    
+    while (currentDir !== root) {
+      if (existsSync(join(currentDir, '.git'))) {
+        return currentDir
+      }
+
+      currentDir = resolve(currentDir, '..')
+    }
+    
+    return null
   }
 }

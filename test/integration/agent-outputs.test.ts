@@ -1,7 +1,7 @@
 import {existsSync, mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
 import {join} from 'node:path'
-import * as yaml from 'yaml'
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
+import * as yaml from 'yaml'
 
 import {RulesBuilder} from '../../src/core/rules-builder.js'
 
@@ -103,8 +103,8 @@ describe('Agent Output Validation', () => {
     it('should update read array with rule paths', async () => {
       // Create existing config
       const existingConfig = {
-        model: 'gpt-4',
         'dark-mode': true,
+        model: 'gpt-4',
       }
       writeFileSync('.aider.conf.yml', yaml.stringify(existingConfig))
       

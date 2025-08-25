@@ -16,5 +16,12 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    // Run tests sequentially to avoid file system conflicts
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 })

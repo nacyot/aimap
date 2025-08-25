@@ -4,8 +4,8 @@ import {join} from 'node:path'
 import type {AgentSpec, BuildContext} from '../types.js'
 
 const agentsSpec: AgentSpec = {
-  builder: (context: BuildContext) => {
-    const {files, sourceDir, dryRun} = context
+  builder(context: BuildContext) {
+    const {dryRun, files, sourceDir} = context
     
     // Read all rule files and combine them
     const sections = []

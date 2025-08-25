@@ -31,7 +31,11 @@ describe('Build Command', () => {
     }
 
     // Clean generated files
-    const filesToClean = ['CLAUDE.md', 'AGENTS.md', '.clinerules', '.roo', '.cursor', '.windsurf']
+    const filesToClean = [
+      'CLAUDE.md', 'AGENTS.md', '.clinerules', '.roo', '.cursor', 
+      '.cursorrules', '.windsurf', '.windsurfrules', '.aider.conf.yml',
+      '.amazonq', '.github', 'GEMINI.md', '.aiassistant'
+    ]
     for (const file of filesToClean) {
       if (existsSync(file)) {
         rmSync(file, {force: true, recursive: true})
@@ -115,6 +119,12 @@ agents:
   
   describe('clean-before-build behavior', () => {
     it('should clean orphaned files when building', async () => {
+      // Ensure test directory exists for this test
+      if (!existsSync(testDir)) {
+        mkdirSync(testDir, {recursive: true})
+        writeFileSync(join(testDir, '01-test.md'), '# Test Rule\n\nThis is a test rule.')
+      }
+      
       // Create .cursor/rules directory with orphaned file
       mkdirSync('.cursor/rules', {recursive: true})
       writeFileSync('.cursor/rules/99-orphaned.mdc', '# This should be removed')

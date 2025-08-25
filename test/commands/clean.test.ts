@@ -2,8 +2,8 @@ import {existsSync, mkdirSync, rmSync, writeFileSync} from 'node:fs'
 import {join} from 'node:path'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import Clean from '../../src/commands/clean.js'
 import {clearRegistry, registerAllAgents} from '../../src/agents/index.js'
+import Clean from '../../src/commands/clean.js'
 
 describe('Clean Command', () => {
   const testDir = './test-clean-project'

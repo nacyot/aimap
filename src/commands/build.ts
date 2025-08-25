@@ -42,20 +42,6 @@ static flags = {
     }),
   }
 
-  private findProjectRoot(): string | null {
-    let currentDir = process.cwd()
-    const root = resolve('/')
-    
-    while (currentDir !== root) {
-      if (existsSync(join(currentDir, '.git'))) {
-        return currentDir
-      }
-      currentDir = resolve(currentDir, '..')
-    }
-    
-    return null
-  }
-
   public async run(): Promise<void> {
     const {flags} = await this.parse(Build)
 
@@ -102,5 +88,20 @@ static flags = {
     } catch (error) {
       this.error(`Failed to build rules: ${error}`, {exit: 1})
     }
+  }
+
+  private findProjectRoot(): null | string {
+    let currentDir = process.cwd()
+    const root = resolve('/')
+    
+    while (currentDir !== root) {
+      if (existsSync(join(currentDir, '.git'))) {
+        return currentDir
+      }
+
+      currentDir = resolve(currentDir, '..')
+    }
+    
+    return null
   }
 }
