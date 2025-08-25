@@ -127,9 +127,9 @@ describe('Agent Output Validation', () => {
       
       // Should add read array with rule paths
       expect(config.read).toEqual([
-        '.rules/01-coding.md',
-        '.rules/02-testing.md',
-        '.rules/03-security.md',
+        'test-integration/01-coding.md',
+        'test-integration/02-testing.md',
+        'test-integration/03-security.md',
       ])
     })
   })

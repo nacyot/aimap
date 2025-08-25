@@ -251,9 +251,9 @@ describe('Agent Implementations', () => {
       expect(existsSync('.aider.conf.yml')).toBe(true)
       const content = readFileSync('.aider.conf.yml', 'utf8')
       expect(content).toContain('read:')
-      expect(content).toContain('.rules/01-coding-style.md')
-      expect(content).toContain('.rules/02-security.md')
-      expect(content).toContain('.rules/03-testing.md')
+      expect(content).toContain('test-rules/01-coding-style.md')
+      expect(content).toContain('test-rules/02-security.md')
+      expect(content).toContain('test-rules/03-testing.md')
     })
   })
   

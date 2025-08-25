@@ -1,12 +1,12 @@
 {
-  "name": "aimap",
+  "name": "aimapper",
   "description": "Universal build tool for managing coding agent rules - Support Claude Code, Cursor, Windsurf, GitHub Copilot, and more",
   "version": "0.2.0",
   "author": "nacyot <propellerheaven@gmail.com>",
   "bin": {
     "aimap": "./bin/run.js"
   },
-  "bugs": "https://github.com/nacyot/aimap/issues",
+  "bugs": "https://github.com/nacyot/aimapper/issues",
   "dependencies": {
     "@inquirer/prompts": "^7.7.1",
     "@oclif/core": "^4",
@@ -36,7 +36,7 @@
     "./.aimap.example.yml",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://github.com/nacyot/aimap",
+  "homepage": "https://github.com/nacyot/aimapper",
   "keywords": [
     "ai",
     "coding-agent",
@@ -65,7 +65,7 @@
     ],
     "topicSeparator": " "
   },
-  "repository": "nacyot/aimap",
+  "repository": "nacyot/aimapper",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint",

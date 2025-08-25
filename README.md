@@ -1,20 +1,22 @@
-# aimap
+# aimapper
 
 Universal build tool for managing coding agent rules across multiple AI-powered development tools. Support Claude Code, Cursor, Windsurf, GitHub Copilot, Amazon Q, and more.
 
-[![npm version](https://badge.fury.io/js/aimap.svg)](https://badge.fury.io/js/aimap)
+[![npm version](https://badge.fury.io/js/aimapperper.svg)](https://badge.fury.io/js/aimapperper)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 
 ```bash
-npm install -g aimap
+npm install -g aimapper
 ```
 
 Or use directly with npx:
 
 ```bash
-npx aimap build
+npx aimapper build  # Uses aimapper package, runs 'aimap build'
+# or after global install:
+aimap build
 ```
 
 ## Usage
@@ -103,7 +105,9 @@ echo "# Testing\n\nWrite unit tests" > .rules/02-testing.md
 
 3. Build rules for your agents:
 ```bash
-npx aimap build --agents claude,cursor,windsurf
+npx aimapper build --agents claude,cursor,windsurf
+# or with global install:
+aimap build --agents claude,cursor,windsurf
 ```
 
 4. Your agents will automatically use the generated files!

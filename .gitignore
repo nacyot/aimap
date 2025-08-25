@@ -44,3 +44,5 @@ AGENTS.md
 .cursor/
 .windsurf/
 .rules/.build_hash
+.rules/*
+!.rules/00-*.md

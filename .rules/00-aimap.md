@@ -1,6 +1,6 @@
-# aimap Project Overview
+# aimapper Project Overview
 
-aimap is a universal build tool for managing coding agent rules across multiple AI-powered development tools.
+aimapper (command: aimap) is a universal build tool for managing coding agent rules across multiple AI-powered development tools.
 
 ## Key Features
 
@@ -18,6 +18,9 @@ aimap is a universal build tool for managing coding agent rules across multiple 
 ## Usage
 
 ```bash
-npx aimap build        # Build for all agents
-npx aimap clean        # Clean generated files
+npx aimapper build     # Build for all agents (runs 'aimap build')
+npx aimapper clean     # Clean generated files (runs 'aimap clean')
+# or with global install:
+aimap build
+aimap clean
 ```

@@ -43,30 +43,8 @@ describe('Build Command', () => {
     }
   })
   
-  it.skip('should build rules from default source', async () => {
-    // Create temporary .rules directory
-    mkdirSync('.rules', {recursive: true})
-    writeFileSync('.rules/01-test.md', '# Test Rule\n\nContent')
-    
-    // Clean up any existing CLAUDE.md from previous tests
-    if (existsSync('CLAUDE.md')) {
-      rmSync('CLAUDE.md')
-    }
-    
-    try {
-      await Build.run(['--agents', 'claude'])
-      expect(existsSync('CLAUDE.md')).toBe(true)
-    } finally {
-      // Clean up .rules and generated files
-      if (existsSync('.rules')) {
-        rmSync('.rules', {force: true, recursive: true})
-      }
-
-      if (existsSync('CLAUDE.md')) {
-        rmSync('CLAUDE.md')
-      }
-    }
-  })
+  // Removed dangerous test that creates .rules in project root
+  // Use custom source directory tests instead
   
   it('should build rules from custom source', async () => {
     // Clean up any existing CLAUDE.md first

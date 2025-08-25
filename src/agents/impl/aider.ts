@@ -1,4 +1,4 @@
-import {existsSync, mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {existsSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
 import {join} from 'node:path'
 import * as yaml from 'yaml'
 
@@ -7,25 +7,19 @@ import type {AgentSpec} from '../types.js'
 const aider: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
     const configFile = '.aider.conf.yml'
-    const rulesDir = '.rules'
     
     if (verbose) {
-      console.log(`Building Aider rules in ${rulesDir}/`)
       console.log(`Updating Aider config at ${configFile}`)
+      console.log(`Adding rules from ${sourceDir}`)
     }
 
     if (!dryRun) {
-      // Create .rules directory if it doesn't exist
-      mkdirSync(rulesDir, {recursive: true})
-      
-      // Copy all markdown files to .rules directory
+      // Build list of rule file paths from sourceDir
       const ruleFiles: string[] = []
       for (const file of files) {
         if (file.endsWith('.md')) {
-          const content = readFileSync(join(sourceDir, file), 'utf8')
-          const outputPath = join(rulesDir, file)
-          writeFileSync(outputPath, content, 'utf8')
-          ruleFiles.push(outputPath)
+          // Use sourceDir paths directly without copying
+          ruleFiles.push(join(sourceDir, file))
         }
       }
       
@@ -51,7 +45,7 @@ const aider: AgentSpec = {
     }
   },
   clean() {
-    // Remove rule files from .aider.conf.yml if it exists
+    // Remove .aider.conf.yml or clear the read array
     const configFile = '.aider.conf.yml'
     if (existsSync(configFile)) {
       try {
@@ -59,21 +53,16 @@ const aider: AgentSpec = {
         const config = yaml.parse(content)
         
         if (config && config.read) {
-          // Filter out .rules/* files
-          if (Array.isArray(config.read)) {
-            config.read = config.read.filter((f: string) => !f.startsWith('.rules/'))
-            if (config.read.length === 0) {
-              delete config.read
-            }
-          }
-          
-          // Only write back if there are other settings
-          if (Object.keys(config).length > 0) {
-            writeFileSync(configFile, yaml.stringify(config), 'utf8')
-          } else {
-            // Remove empty config file
-            rmSync(configFile)
-          }
+          // Clear the read array completely
+          delete config.read
+        }
+        
+        // Only write back if there are other settings
+        if (Object.keys(config).length > 0) {
+          writeFileSync(configFile, yaml.stringify(config), 'utf8')
+        } else {
+          // Remove empty config file
+          rmSync(configFile)
         }
       } catch {
         // Ignore errors during cleanup
