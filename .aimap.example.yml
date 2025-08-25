@@ -1,0 +1,27 @@
+# aimap configuration file
+# Copy this file to .aimap.yml and customize for your project
+
+# Source directory for rule files
+source: .rules
+
+# Agents to build for (default: claude only)
+# Available: agents, claude, cline, roocode, cursor, windsurf,
+#            copilot, amazonq, aider, jetbrains, gemini
+agents:
+  - agents      # Universal (AGENTS.md with all rules)
+  - claude      # Claude (CLAUDE.md with @ references)
+  - cline       # Cline (.clinerules/)
+  - roocode     # RooCode (.roo/rules/)
+  - cursor      # Cursor (.cursor/rules, .cursorrules)
+  - windsurf    # Windsurf/Codeium (.windsurfrules)
+  - copilot     # GitHub Copilot (.github/instructions/*.instructions.md)
+  - amazonq     # Amazon Q Developer (.amazonq/rules/)
+  - aider       # Aider (.aider.conf.yml with read array)
+  - jetbrains   # JetBrains AI Assistant (.aiassistant/rules/)
+  - gemini      # Google Gemini (GEMINI.md)
+
+# Custom output paths (optional)
+# outputs:
+#   claude: CUSTOM_CLAUDE.md
+#   cline: .custom-clinerules
+#   copilot: .github/custom-copilot.md
