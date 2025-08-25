@@ -60,6 +60,11 @@ describe('Build Command', () => {
   })
   
   it('should build rules from custom source', async () => {
+    // Clean up any existing CLAUDE.md first
+    if (existsSync('CLAUDE.md')) {
+      rmSync('CLAUDE.md')
+    }
+    
     await Build.run(['--source', testDir, '--agents', 'claude'])
     expect(existsSync('CLAUDE.md')).toBe(true)
   })
@@ -75,8 +80,18 @@ describe('Build Command', () => {
   })
   
   it('should build for multiple agents', async () => {
+    // Clean up any existing files first
+    if (existsSync('CLAUDE.md')) {
+      rmSync('CLAUDE.md')
+    }
+    
+    if (existsSync('.cursor')) {
+      rmSync('.cursor', {force: true, recursive: true})
+    }
+    
     await Build.run(['--source', testDir, '--agents', 'claude,cursor'])
     expect(existsSync('CLAUDE.md')).toBe(true)
+    
     expect(existsSync('.cursor/rules')).toBe(true)
   })
   

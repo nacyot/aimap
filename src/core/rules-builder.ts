@@ -96,8 +96,10 @@ export class RulesBuilder {
     try {
       await agent.builder(context)
       
-      for (const outputPath of agent.outputPaths) {
-        this.log(`   ✅ ${outputPath} created`)
+      if (!this.dryRun) {
+        for (const outputPath of agent.outputPaths) {
+          this.log(`   ✅ ${outputPath} created`)
+        }
       }
     } catch (error) {
       this.log(`   ❌ Failed to build for ${agent.displayName}: ${error}`)

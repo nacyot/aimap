@@ -30,6 +30,11 @@ describe('RulesBuilder', () => {
   })
   
   it('should build rules for Claude', async () => {
+    // Clean up any existing CLAUDE.md first
+    if (existsSync('CLAUDE.md')) {
+      rmSync('CLAUDE.md')
+    }
+    
     const builder = new RulesBuilder({
       agents: ['claude'],
       dryRun: false,
@@ -80,6 +85,19 @@ describe('RulesBuilder', () => {
   })
   
   it('should build for multiple agents', async () => {
+    // Clean up any existing files first
+    if (existsSync('CLAUDE.md')) {
+      rmSync('CLAUDE.md')
+    }
+    
+    if (existsSync('.cursor')) {
+      rmSync('.cursor', {force: true, recursive: true})
+    }
+    
+    if (existsSync('.cursorrules')) {
+      rmSync('.cursorrules')
+    }
+    
     const builder = new RulesBuilder({
       agents: ['claude', 'cursor'],
       dryRun: false,
@@ -119,7 +137,7 @@ describe('RulesBuilder', () => {
   })
   
   it.skip('should support custom output paths', async () => {
-    // TODO: Implement custom output paths in the new registry system
+    // Implement custom output paths in the new registry system
     const builder = new RulesBuilder({
       agents: ['claude'],
       dryRun: false,
