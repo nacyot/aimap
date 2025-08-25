@@ -19,18 +19,13 @@ const windsurf: AgentSpec = {
         .map(file => readFileSync(join(sourceDir, file), 'utf8'))
         .join('\n\n')
       
-      // Check file size - fail if exceeds hard limit (2025: content ignored, not truncated)
+      // Check file size and warn if exceeds limit
       const contentSize = Buffer.byteLength(content, 'utf8')
       if (contentSize > MAX_FILE_SIZE) {
-        const error = `Error: Combined rules are ${contentSize} bytes, exceeding Windsurf's ${MAX_FILE_SIZE} byte limit.`
-        console.error(error)
-        console.error('Windsurf will ignore the entire file if it exceeds 6KB.')
-        console.error('Please reduce the size of your rules or exclude some files.')
-        throw new Error(error)
-      }
-      
-      // Warn if approaching limit
-      if (contentSize > MAX_FILE_SIZE * 0.9) {
+        console.warn(`⚠️  Warning: .windsurfrules is ${contentSize} bytes, exceeding Windsurf's ${MAX_FILE_SIZE} byte limit.`)
+        console.warn('⚠️  Windsurf will ignore the entire file since it exceeds 6KB.')
+        console.warn('⚠️  Consider reducing the size of your rules or excluding some files.')
+      } else if (contentSize > MAX_FILE_SIZE * 0.9) {
         console.warn(`⚠️  Warning: .windsurfrules is ${contentSize} bytes (90% of ${MAX_FILE_SIZE} byte limit)`)
       }
       
