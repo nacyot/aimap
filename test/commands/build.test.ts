@@ -13,6 +13,11 @@ describe('Build Command', () => {
     mkdirSync(testDir, {recursive: true})
     writeFileSync(join(testDir, '01-test.md'), '# Test Rule\n\nThis is a test rule.')
     writeFileSync(join(testDir, '00-meta.yaml'), 'version: 1.0\n')
+    
+    // Create git directory (required for project root detection)
+    if (!existsSync('.git')) {
+      mkdirSync('.git', {recursive: true})
+    }
   })
   
   afterEach(() => {
@@ -106,5 +111,37 @@ agents:
     
     await Build.run(['--config', testConfig, '--force'])
     expect(existsSync('CLAUDE.md')).toBe(true)
+  })
+  
+  describe('clean-before-build behavior', () => {
+    it('should clean orphaned files when building', async () => {
+      // Create .cursor/rules directory with orphaned file
+      mkdirSync('.cursor/rules', {recursive: true})
+      writeFileSync('.cursor/rules/99-orphaned.mdc', '# This should be removed')
+      writeFileSync('.cursor/rules/01-test.mdc', '# This will be replaced')
+      
+      // Build with cursor agent
+      await Build.run(['--source', testDir, '--agents', 'cursor', '--force'])
+      
+      // Orphaned file should be removed
+      expect(existsSync('.cursor/rules/99-orphaned.mdc')).toBe(false)
+      
+      // New file should exist
+      expect(existsSync('.cursor/rules/01-test.mdc')).toBe(true)
+      
+      // Check file count - should only have the one rule file
+      const fs = await import('node:fs')
+      const files = fs.readdirSync('.cursor/rules')
+      expect(files.length).toBe(1)
+      expect(files[0]).toBe('01-test.mdc')
+    })
+    
+    it('should handle clean errors gracefully in dry-run mode', async () => {
+      // Dry run should not attempt to clean
+      await Build.run(['--source', testDir, '--agents', 'cursor', '--dry', '--force'])
+      
+      // Nothing should be created in dry-run mode
+      expect(existsSync('.cursor')).toBe(false)
+    })
   })
 })
