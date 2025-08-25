@@ -1,0 +1,36 @@
+# Source files
+src/
+test/
+tmp/
+
+# Development files
+.eslintrc.json
+.gitignore
+.prettierrc
+tsconfig.json
+vitest.config.ts
+
+# Build artifacts
+*.tsbuildinfo
+
+# Misc
+.changeset/
+.notes/
+.rules/
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.amazonq/
+.aider.conf.yml
+.clinerules/
+.cursor/
+.cursorrules
+.github/instructions/
+.roo/
+.windsurfrules
+.aiassistant/
+.aimap.build.hash
+.aimap.yml
+
+# Keep only the example file
+!.aimap.example.yml

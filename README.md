@@ -1,6 +1,9 @@
 # aimap
 
-A universal build tool for managing coding agent rules across multiple AI-powered development tools
+Universal build tool for managing coding agent rules across multiple AI-powered development tools. Support Claude Code, Cursor, Windsurf, GitHub Copilot, Amazon Q, and more.
+
+[![npm version](https://badge.fury.io/js/aimap.svg)](https://badge.fury.io/js/aimap)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 
@@ -8,20 +11,10 @@ A universal build tool for managing coding agent rules across multiple AI-powere
 npm install -g aimap
 ```
 
-Or use directly with npx (after publish):
+Or use directly with npx:
 
 ```bash
 npx aimap build
-```
-
-### Local (pre-publish) usage
-
-When working in this repository before publish, use the local wrapper:
-
-```bash
-./aimap --help
-./aimap build
-./aimap clean
 ```
 
 ## Usage
@@ -79,43 +72,76 @@ outputs:
 - `-v, --verbose` - Verbose output
 - `-c, --config <file>` - Path to config file [default: .aimap.yml]
 
-## Supported Coding Agents
+## Supported Coding Agents (2025)
 
-### Core Agents
-- **Claude** - Generates `CLAUDE.md` with `@` import syntax (default)
-- **Agents** - Generates `AGENTS.md` for universal multi-agent support
-- **Cline** - Copies rules to `.clinerules/` directory
-- **RooCode** - Copies rules to `.roo/` directory  
-- **Cursor** - Generates `.cursor/rules` and `.cursorrules` files
-- **Windsurf** - Generates `.windsurf/rules` and `.windsurfrules` files
+| Agent | ID | Output Files | Notes |
+|-------|-----|--------------|-------|
+| **Universal Agents** | `agents` | `AGENTS.md` | Combined rules for any agent |
+| **Claude Code** | `claude` | `CLAUDE.md` | Uses `@` reference syntax |
+| **Cursor IDE** | `cursor` | `.cursor/rules/*.mdc`, `.cursorrules` | MDC format (v0.52+) |
+| **GitHub Copilot** | `copilot` | `.github/instructions/*.instructions.md` | Granular instructions |
+| **Amazon Q** | `amazonq` | `.amazonq/rules/*.md` | 32KB file limit |
+| **Aider** | `aider` | `.aider.conf.yml` | Updates read array |
+| **Cline** | `cline` | `.clinerules/*.md` | Individual files |
+| **RooCode** | `roocode` | `.roo/rules/*.md` | Individual files |
+| **Windsurf** | `windsurf` | `.windsurfrules` | 6KB hard limit |
+| **JetBrains AI** | `jetbrains` | `.aiassistant/rules/*.md` | Individual files |
+| **Gemini CLI** | `gemini` | `GEMINI.md` | Combined rules |
 
-### Popular Agents (2025)
-- **GitHub Copilot** - Generates `.github/copilot-instructions.md`
-- **Amazon Q** - Copies rules to `.amazonq/rules/` directory
-- **Continue.dev** - Generates `.continue/config.yaml` with rules array
-- **Aider** - Generates `.aider.conf.yml` with read field and `.aider-rules/` directory
-- **Tabnine** - Generates `.tabnine` configuration file
-- **Replit AI** - Generates `replit.md` file
+## Quick Start
 
-### Enterprise Agents
-- **JetBrains AI Assistant** - Generates `.jbai/rules.md`
-- **Sourcegraph Cody** - Generates `.cody.json` configuration
-- **Google Gemini Code Assist** - Generates `.gemini/rules.yaml`
-- **Pieces for Developers** - Generates `pieces.toml` configuration
-- **Tabby ML** - Generates `tabby.yaml` for self-hosted instances
-- **GitHub Copilot Workspace** - Generates `.workspace/rules.yaml` for workflows
-
-## Rule Files Structure
-
-Create a `.rules/` directory in your project with markdown files:
-
+1. Create a `.rules/` directory in your project:
+```bash
+mkdir .rules
 ```
-.rules/
-├── 00-meta.yaml      # Project metadata (optional)
-├── 01-general.md     # General development rules
-├── 10-typescript.md  # Language-specific rules
-├── 20-testing.md     # Testing guidelines
-└── ...
+
+2. Add your coding rules as markdown files:
+```bash
+echo "# Code Style\n\nUse TypeScript" > .rules/01-style.md
+echo "# Testing\n\nWrite unit tests" > .rules/02-testing.md
+```
+
+3. Build rules for your agents:
+```bash
+npx aimap build --agents claude,cursor,windsurf
+```
+
+4. Your agents will automatically use the generated files!
+
+## Example
+
+### Project Structure
+```
+my-project/
+├── .rules/
+│   ├── 01-coding-style.md
+│   ├── 02-architecture.md
+│   └── 03-testing.md
+├── .aimap.yml              # Optional config
+└── ... (generated files after build)
+```
+
+### Sample Config (.aimap.yml)
+```yaml
+# Source directory for rule files
+source: .rules
+
+# Agents to build for
+agents:
+  - claude
+  - cursor
+  - copilot
+  - windsurf
+```
+
+### Sample Rule File (.rules/01-coding-style.md)
+```markdown
+# Coding Style Guidelines
+
+- Use TypeScript for all new code
+- Follow ESLint configuration  
+- Write comprehensive tests
+- Use meaningful variable names
 ```
 
 ## Development

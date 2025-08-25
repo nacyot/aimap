@@ -1,7 +1,7 @@
 {
   "name": "aimap",
-  "description": "Universal build tool for managing coding agent rules",
-  "version": "0.0.1",
+  "description": "Universal build tool for managing coding agent rules - Support Claude Code, Cursor, Windsurf, GitHub Copilot, and more",
+  "version": "0.1.0",
   "author": "nacyot <propellerheaven@gmail.com>",
   "bin": {
     "aimap": "./bin/run.js"
@@ -34,13 +34,23 @@
   "files": [
     "./bin",
     "./dist",
+    "./.aimap.example.yml",
     "./oclif.manifest.json"
   ],
   "homepage": "https://github.com/nacyot/aimap",
   "keywords": [
     "ai",
-    "map",
-    "visualization",
+    "coding-agent",
+    "claude",
+    "cursor",
+    "windsurf",
+    "copilot",
+    "amazonq",
+    "aider",
+    "cline",
+    "roocode",
+    "rules",
+    "instructions",
     "cli",
     "oclif"
   ],
