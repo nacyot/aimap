@@ -33,6 +33,9 @@ oclif.manifest.json
 # tmp
 tmp/
 
+# Private notes
+.notes/
+
 # Generated rule files
 CLAUDE.md
 AGENTS.md
