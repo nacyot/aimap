@@ -46,8 +46,9 @@ describe('RulesBuilder', () => {
     
     expect(existsSync('CLAUDE.md')).toBe(true)
     const content = readFileSync('CLAUDE.md', 'utf8')
-    expect(content).toContain('@test-rules-builder/01-general.md')
-    expect(content).toContain('@test-rules-builder/02-specific.md')
+    // The relative path includes the ./ prefix
+    expect(content).toContain('test-rules-builder/01-general.md')
+    expect(content).toContain('test-rules-builder/02-specific.md')
   })
   
   it('should build rules for Cline', async () => {

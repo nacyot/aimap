@@ -65,7 +65,7 @@ describe('Build Command', () => {
       rmSync('CLAUDE.md')
     }
     
-    await Build.run(['--source', testDir, '--agents', 'claude'])
+    await Build.run(['--source', testDir, '--agents', 'claude', '--force'])
     expect(existsSync('CLAUDE.md')).toBe(true)
   })
   
@@ -89,7 +89,7 @@ describe('Build Command', () => {
       rmSync('.cursor', {force: true, recursive: true})
     }
     
-    await Build.run(['--source', testDir, '--agents', 'claude,cursor'])
+    await Build.run(['--source', testDir, '--agents', 'claude,cursor', '--force'])
     expect(existsSync('CLAUDE.md')).toBe(true)
     
     expect(existsSync('.cursor/rules')).toBe(true)
@@ -103,7 +103,7 @@ agents:
   - claude
 `)
     
-    await Build.run(['--config', testConfig])
+    await Build.run(['--config', testConfig, '--force'])
     expect(existsSync('CLAUDE.md')).toBe(true)
   })
 })
