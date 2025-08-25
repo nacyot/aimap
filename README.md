@@ -26,10 +26,10 @@ When working in this repository before publish, use the local wrapper:
 
 ## Usage
 
-### Build rules for all coding agents
+### Build rules for default agent (Claude)
 
 ```bash
-aimap build
+aimap build  # Generates CLAUDE.md only
 ```
 
 ### Build for specific agents
@@ -82,12 +82,12 @@ outputs:
 ## Supported Coding Agents
 
 ### Core Agents
-- **Claude Code** - Generates `CLAUDE.md` and `AGENTS.md` with `@` import syntax
+- **Claude** - Generates `CLAUDE.md` with `@` import syntax (default)
+- **Agents** - Generates `AGENTS.md` for universal multi-agent support
 - **Cline** - Copies rules to `.clinerules/` directory
 - **RooCode** - Copies rules to `.roo/` directory  
 - **Cursor** - Generates `.cursor/rules` and `.cursorrules` files
 - **Windsurf** - Generates `.windsurf/rules` and `.windsurfrules` files
-- **Codex** - Generates `CODEX.md` file
 
 ### Popular Agents (2025)
 - **GitHub Copilot** - Generates `.github/copilot-instructions.md`

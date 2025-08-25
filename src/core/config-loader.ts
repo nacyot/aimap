@@ -10,26 +10,7 @@ export interface AimapConfig {
 }
 
 const DEFAULT_CONFIG: AimapConfig = {
-  agents: [
-    'claude',
-    'cline',
-    'roocode',
-    'cursor',
-    'windsurf',
-    'codex',
-    'copilot',
-    'amazonq',
-    'continue',
-    'aider',
-    'tabnine',
-    'replit',
-    'jetbrains',
-    'cody',
-    'gemini',
-    'pieces',
-    'tabby',
-    'workspace',
-  ],
+  agents: ['claude'],
   source: '.rules',
 }
 

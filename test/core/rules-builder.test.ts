@@ -21,7 +21,7 @@ describe('RulesBuilder', () => {
       rmSync(testDir, {force: true, recursive: true})
     }
     
-    const filesToClean = ['CLAUDE.md', 'AGENTS.md', '.clinerules', '.roo', '.cursor', '.windsurf', '.cursorrules', '.windsurfrules', 'CODEX.md']
+    const filesToClean = ['CLAUDE.md', 'AGENTS.md', '.clinerules', '.roo', '.cursor', '.windsurf', '.cursorrules', '.windsurfrules']
     for (const file of filesToClean) {
       if (existsSync(file)) {
         rmSync(file, {force: true, recursive: true})
@@ -66,9 +66,6 @@ describe('RulesBuilder', () => {
       rmSync('CLAUDE.md')
     }
 
-    if (existsSync('AGENTS.md')) {
-      rmSync('AGENTS.md')
-    }
     
     const builder = new RulesBuilder({
       agents: ['claude'],
@@ -80,7 +77,6 @@ describe('RulesBuilder', () => {
     await builder.build()
     
     expect(existsSync('CLAUDE.md')).toBe(false)
-    expect(existsSync('AGENTS.md')).toBe(false)
   })
   
   it('should build for multiple agents', async () => {

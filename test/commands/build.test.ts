@@ -43,15 +43,10 @@ describe('Build Command', () => {
     if (existsSync('CLAUDE.md')) {
       rmSync('CLAUDE.md')
     }
-
-    if (existsSync('AGENTS.md')) {
-      rmSync('AGENTS.md')
-    }
     
     try {
       await Build.run(['--agents', 'claude'])
       expect(existsSync('CLAUDE.md')).toBe(true)
-      expect(existsSync('AGENTS.md')).toBe(true)
     } finally {
       // Clean up .rules and generated files
       if (existsSync('.rules')) {
@@ -60,10 +55,6 @@ describe('Build Command', () => {
 
       if (existsSync('CLAUDE.md')) {
         rmSync('CLAUDE.md')
-      }
-
-      if (existsSync('AGENTS.md')) {
-        rmSync('AGENTS.md')
       }
     }
   })

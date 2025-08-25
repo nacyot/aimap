@@ -7,7 +7,6 @@ describe('Clean Command', () => {
   beforeEach(() => {
     // Create test files to clean
     writeFileSync('CLAUDE.md', 'test')
-    writeFileSync('AGENTS.md', 'test')
     mkdirSync('.clinerules', {recursive: true})
     writeFileSync('.clinerules/test.md', 'test')
   })
@@ -28,23 +27,17 @@ describe('Clean Command', () => {
       writeFileSync('CLAUDE.md', 'test')
     }
 
-    if (!existsSync('AGENTS.md')) {
-      writeFileSync('AGENTS.md', 'test')
-    }
-
     if (!existsSync('.clinerules')) {
       mkdirSync('.clinerules', {recursive: true})
       writeFileSync('.clinerules/test.md', 'test')
     }
     
     expect(existsSync('CLAUDE.md')).toBe(true)
-    expect(existsSync('AGENTS.md')).toBe(true)
     expect(existsSync('.clinerules')).toBe(true)
     
     await Clean.run([])
     
     expect(existsSync('CLAUDE.md')).toBe(false)
-    expect(existsSync('AGENTS.md')).toBe(false)
     expect(existsSync('.clinerules')).toBe(false)
   })
   

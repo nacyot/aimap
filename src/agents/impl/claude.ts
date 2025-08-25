@@ -21,25 +21,15 @@ const claude: AgentSpec = {
     if (!dryRun) {
       writeFileSync(outputPath, claudeContent, 'utf8')
     }
-
-    // Also create AGENTS.md as a symlink/copy for compatibility
-    const agentsPath = 'AGENTS.md'
-    if (!dryRun) {
-      writeFileSync(agentsPath, claudeContent, 'utf8')
-    }
   },
   clean() {
     if (existsSync('CLAUDE.md')) {
       rmSync('CLAUDE.md')
     }
-
-    if (existsSync('AGENTS.md')) {
-      rmSync('AGENTS.md')
-    }
   },
   displayName: 'Claude',
   id: 'claude',
-  outputPaths: ['CLAUDE.md', 'AGENTS.md'],
+  outputPaths: ['CLAUDE.md'],
 }
 
 export default claude

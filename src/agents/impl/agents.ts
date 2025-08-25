@@ -3,12 +3,12 @@ import {join} from 'node:path'
 
 import type {AgentSpec} from '../types.js'
 
-const codex: AgentSpec = {
+const agents: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
-    const outputPath = 'CODEX.md'
+    const outputPath = 'AGENTS.md'
     
     if (verbose) {
-      console.log(`Building Codex rules at ${outputPath}`)
+      console.log(`Building universal agents rules at ${outputPath}`)
     }
 
     if (!dryRun) {
@@ -21,13 +21,13 @@ const codex: AgentSpec = {
     }
   },
   clean() {
-    if (existsSync('CODEX.md')) {
-      rmSync('CODEX.md')
+    if (existsSync('AGENTS.md')) {
+      rmSync('AGENTS.md')
     }
   },
-  displayName: 'Codex',
-  id: 'codex',
-  outputPaths: ['CODEX.md'],
+  displayName: 'Universal Agents',
+  id: 'agents',
+  outputPaths: ['AGENTS.md'],
 }
 
-export default codex
+export default agents
