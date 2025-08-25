@@ -6,6 +6,8 @@ import type {AgentSpec} from '../types.js'
 const claude: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
     const outputPath = 'CLAUDE.md'
+    
+    // Build CLAUDE.md with @ references (best practice for frequently changing files)
     const claudeContent = files
       .filter(file => file.endsWith('.md'))
       .map(file => {
@@ -19,6 +21,7 @@ const claude: AgentSpec = {
     }
 
     if (!dryRun) {
+      // Create CLAUDE.md only
       writeFileSync(outputPath, claudeContent, 'utf8')
     }
   },
@@ -27,7 +30,7 @@ const claude: AgentSpec = {
       rmSync('CLAUDE.md')
     }
   },
-  displayName: 'Claude',
+  displayName: 'Claude Code',
   id: 'claude',
   outputPaths: ['CLAUDE.md'],
 }

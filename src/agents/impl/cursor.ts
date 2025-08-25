@@ -6,23 +6,30 @@ import type {AgentSpec} from '../types.js'
 const cursor: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
     const outputDir = '.cursor'
-    const outputFile = join(outputDir, 'rules')
+    const mainRuleFile = join(outputDir, 'rules')
     
     if (verbose) {
-      console.log(`Building Cursor rules at ${outputFile}`)
+      console.log(`Building Cursor rules at ${mainRuleFile}`)
     }
 
     if (!dryRun) {
       mkdirSync(outputDir, {recursive: true})
       
+      // Create main rules file with all content
       const content = files
         .filter(file => file.endsWith('.md'))
         .map(file => readFileSync(join(sourceDir, file), 'utf8'))
         .join('\n\n')
       
-      writeFileSync(outputFile, content, 'utf8')
+      // Write to .cursor/rules (canonical location as of 2025)
+      writeFileSync(mainRuleFile, content, 'utf8')
       
-      // Also create .cursorrules for compatibility
+      // Optionally create .cursorrules for backward compatibility
+      // (can be removed once all team members upgrade)
+      if (verbose) {
+        console.log('Creating .cursorrules for backward compatibility')
+      }
+
       writeFileSync('.cursorrules', content, 'utf8')
     }
   },
@@ -35,7 +42,7 @@ const cursor: AgentSpec = {
       rmSync('.cursorrules')
     }
   },
-  displayName: 'Cursor',
+  displayName: 'Cursor IDE',
   id: 'cursor',
   outputPaths: ['.cursor/rules', '.cursorrules'],
 }

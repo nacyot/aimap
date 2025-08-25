@@ -5,7 +5,7 @@ import type {AgentSpec} from '../types.js'
 
 const roocode: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
-    const outputDir = '.roo'
+    const outputDir = '.roo/rules'
     
     if (verbose) {
       console.log(`Building RooCode rules at ${outputDir}/`)
@@ -14,6 +14,7 @@ const roocode: AgentSpec = {
     if (!dryRun) {
       mkdirSync(outputDir, {recursive: true})
       
+      // Copy each markdown file to .roo/rules/ (loaded alphabetically)
       for (const file of files) {
         if (file.endsWith('.md')) {
           const content = readFileSync(join(sourceDir, file), 'utf8')
@@ -29,7 +30,7 @@ const roocode: AgentSpec = {
   },
   displayName: 'RooCode',
   id: 'roocode',
-  outputPaths: ['.roo/'],
+  outputPaths: ['.roo/rules/'],
 }
 
 export default roocode

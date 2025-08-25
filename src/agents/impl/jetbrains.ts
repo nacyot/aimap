@@ -5,32 +5,32 @@ import type {AgentSpec} from '../types.js'
 
 const jetbrains: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
-    const outputDir = '.jbai'
-    const outputFile = join(outputDir, 'rules.md')
+    const outputDir = '.aiassistant/rules'
     
     if (verbose) {
-      console.log(`Building JetBrains AI Assistant rules at ${outputFile}`)
+      console.log(`Building JetBrains AI Assistant rules at ${outputDir}/`)
     }
 
     if (!dryRun) {
       mkdirSync(outputDir, {recursive: true})
       
-      const content = files
-        .filter(file => file.endsWith('.md'))
-        .map(file => readFileSync(join(sourceDir, file), 'utf8'))
-        .join('\n\n')
-      
-      writeFileSync(outputFile, content, 'utf8')
+      // Copy each markdown file to .aiassistant/rules/
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const content = readFileSync(join(sourceDir, file), 'utf8')
+          writeFileSync(join(outputDir, file), content, 'utf8')
+        }
+      }
     }
   },
   clean() {
-    if (existsSync('.jbai')) {
-      rmSync('.jbai', {force: true, recursive: true})
+    if (existsSync('.aiassistant')) {
+      rmSync('.aiassistant', {force: true, recursive: true})
     }
   },
   displayName: 'JetBrains AI Assistant',
   id: 'jetbrains',
-  outputPaths: ['.jbai/rules.md'],
+  outputPaths: ['.aiassistant/rules/'],
 }
 
 export default jetbrains

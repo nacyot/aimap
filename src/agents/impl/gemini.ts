@@ -1,46 +1,35 @@
-import {existsSync, mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {existsSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
 import {join} from 'node:path'
-import * as yaml from 'yaml'
 
 import type {AgentSpec} from '../types.js'
 
 const gemini: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
-    const outputDir = '.gemini'
-    const outputFile = join(outputDir, 'rules.yaml')
+    const outputFile = 'GEMINI.md'  // 자동으로 읽는 파일
     
     if (verbose) {
-      console.log(`Building Google Gemini Code Assist rules at ${outputFile}`)
+      console.log(`Building Gemini CLI rules at ${outputFile}`)
     }
 
     if (!dryRun) {
-      mkdirSync(outputDir, {recursive: true})
-      
-      // Build rules content
+      // Build combined markdown content for GEMINI.md
       const rulesContent = files
         .filter(file => file.endsWith('.md'))
         .map(file => readFileSync(join(sourceDir, file), 'utf8'))
         .join('\n\n')
       
-      // Create Gemini config with YAML structure
-      const config = {
-        apiVersion: 'v1',
-        maxContextTokens: 8000,
-        rules: rulesContent,
-        version: '1.0',
-      }
-      
-      writeFileSync(outputFile, yaml.stringify(config), 'utf8')
+      // Write GEMINI.md (automatically loaded by Gemini CLI)
+      writeFileSync(outputFile, rulesContent, 'utf8')
     }
   },
   clean() {
-    if (existsSync('.gemini')) {
-      rmSync('.gemini', {force: true, recursive: true})
+    if (existsSync('GEMINI.md')) {
+      rmSync('GEMINI.md')
     }
   },
-  displayName: 'Google Gemini Code Assist',
+  displayName: 'Gemini CLI',
   id: 'gemini',
-  outputPaths: ['.gemini/rules.yaml'],
+  outputPaths: ['GEMINI.md'],
 }
 
 export default gemini
