@@ -79,7 +79,7 @@ outputs:
 | Agent | ID | Output Files | Notes |
 |-------|-----|--------------|-------|
 | **Universal Agents** | `agents` | `AGENTS.md` | Combined rules for any agent |
-| **Claude Code** | `claude` | `CLAUDE.md` | Uses `@` reference syntax |
+| **Claude Code** | `claude` | `CLAUDE.md` | Writes a bullet list of `@` references; supports `CLAUDE.tempalte.md` with `@@RULES@@` placeholder |
 | **Cursor IDE** | `cursor` | `.cursor/rules/*.mdc`, `.cursorrules` | MDC format (v0.52+) |
 | **GitHub Copilot** | `copilot` | `.github/instructions/*.instructions.md` | Granular instructions |
 | **Amazon Q** | `amazonq` | `.amazonq/rules/*.md` | 32KB file limit |
@@ -124,6 +124,17 @@ my-project/
 ├── .aimap.yml              # Optional config
 └── ... (generated files after build)
 ```
+
+### Generated `CLAUDE.md`
+When building for Claude, the file contains a list of rule references:
+
+```markdown
+- @.rules/01-coding-style.md
+- @.rules/02-architecture.md
+- @.rules/03-testing.md
+```
+
+If a `CLAUDE.tempalte.md` file exists in the project root, `@@RULES@@` will be replaced with this list in the template content.
 
 ### Sample Config (.aimap.yml)
 ```yaml
