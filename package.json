@@ -1,7 +1,7 @@
 {
   "name": "aimapper",
   "description": "Universal build tool for managing coding agent rules - Support Claude Code, Cursor, Windsurf, GitHub Copilot, and more",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "author": "nacyot <propellerheaven@gmail.com>",
   "bin": {
     "aimap": "./bin/run.js"
