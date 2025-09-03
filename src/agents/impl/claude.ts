@@ -1,4 +1,4 @@
-import {existsSync, rmSync, writeFileSync} from 'node:fs'
+import {existsSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
 import {join, relative} from 'node:path'
 
 import type {AgentSpec} from '../types.js'
@@ -6,13 +6,14 @@ import type {AgentSpec} from '../types.js'
 const claude: AgentSpec = {
   builder({dryRun, files, sourceDir, verbose}) {
     const outputPath = 'CLAUDE.md'
-    
-    // Build CLAUDE.md with @ references (best practice for frequently changing files)
-    const claudeContent = files
+    const templatePath = 'CLAUDE.tempalte.md' // Intentional: support exact filename requested
+
+    // Build list-style references (e.g., "- @.rules/01.md")
+    const rulesList = files
       .filter(file => file.endsWith('.md'))
       .map(file => {
         const relativePath = relative(process.cwd(), join(sourceDir, file))
-        return `@${relativePath}`
+        return `- @${relativePath}`
       })
       .join('\n')
 
@@ -21,8 +22,15 @@ const claude: AgentSpec = {
     }
 
     if (!dryRun) {
-      // Create CLAUDE.md only
-      writeFileSync(outputPath, claudeContent, 'utf8')
+      // If a CLAUDE.tempalte.md exists, use it and replace @@RULES@@ with the list
+      if (existsSync(templatePath)) {
+        const template = readFileSync(templatePath, 'utf8')
+        const filled = template.replace('@@RULES@@', rulesList)
+        writeFileSync(outputPath, filled, 'utf8')
+      } else {
+        // Fallback: write just the rules list
+        writeFileSync(outputPath, rulesList, 'utf8')
+      }
     }
   },
   clean() {

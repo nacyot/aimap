@@ -49,6 +49,34 @@ describe('RulesBuilder', () => {
     // The relative path includes the ./ prefix
     expect(content).toContain('test-rules-builder/01-general.md')
     expect(content).toContain('test-rules-builder/02-specific.md')
+    // Should be bullet list style
+    expect(content).toMatch(/^-\s@/m)
+  })
+
+  it('should use CLAUDE.tempalte.md when present', async () => {
+    // Arrange: create a template with placeholder
+    const template = `# Claude Rules\n\nBelow are the rules:\n\n@@RULES@@\n\n-- end --\n`
+    writeFileSync('CLAUDE.tempalte.md', template)
+
+    const builder = new RulesBuilder({
+      agents: ['claude'],
+      dryRun: false,
+      sourceDir: testDir,
+      verbose: false,
+    })
+
+    // Act
+    await builder.build()
+
+    // Assert
+    expect(existsSync('CLAUDE.md')).toBe(true)
+    const content = readFileSync('CLAUDE.md', 'utf8')
+    expect(content.startsWith('# Claude Rules')).toBe(true)
+    expect(content).toContain('- @test-rules-builder/01-general.md')
+    expect(content).toContain('-- end --')
+
+    // Cleanup template
+    rmSync('CLAUDE.tempalte.md')
   })
   
   it('should build rules for Cline', async () => {
