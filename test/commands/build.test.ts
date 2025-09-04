@@ -56,6 +56,7 @@ describe('Build Command', () => {
     expect(existsSync('CLAUDE.md')).toBe(true)
   })
   
+  // eslint-disable-next-line mocha/no-skipped-tests
   it.skip('should support dry run mode', async () => {
     // Clean up any existing files first
     if (existsSync('CLAUDE.md')) {

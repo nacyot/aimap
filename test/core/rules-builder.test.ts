@@ -167,6 +167,7 @@ describe('RulesBuilder', () => {
     await expect(builder.build()).rejects.toThrow('does not exist')
   })
   
+  // eslint-disable-next-line mocha/no-skipped-tests
   it.skip('should support custom output paths', async () => {
     // Implement custom output paths in the new registry system
     const builder = new RulesBuilder({

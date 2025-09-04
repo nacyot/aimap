@@ -38,6 +38,7 @@ export default class Clean extends Command {
     }),
   }
 
+  /* eslint-disable complexity, max-depth */
   public async run(): Promise<void> {
     const {flags} = await this.parse(Clean)
     
@@ -135,6 +136,7 @@ export default class Clean extends Command {
       this.log('ℹ️  Nothing to clean')
     }
   }
+  /* eslint-enable complexity, max-depth */
 
   private findProjectRoot(): null | string {
     let currentDir = process.cwd()

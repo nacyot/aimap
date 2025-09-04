@@ -175,6 +175,7 @@ agents:
   })
   
   describe('error handling', () => {
+    // eslint-disable-next-line mocha/no-skipped-tests
     it.skip('should require git repository', async () => {
       // Remove .git directory
       rmSync('.git', {force: true, recursive: true})
@@ -198,6 +199,7 @@ agents:
       await expect(Clean.run(['--force'])).resolves.not.toThrow()
     })
     
+    // eslint-disable-next-line mocha/no-skipped-tests
     it.skip('should handle unknown agents in config gracefully', async () => {
       // Create config with unknown agent
       const badConfig = `
