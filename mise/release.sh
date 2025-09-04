@@ -70,13 +70,14 @@ npm run build
 CURRENT_VERSION=$(node -p "require('./package.json').version")
 echo "Current version: $CURRENT_VERSION"
 
-# Calculate new version using npm version (dry-run to preview)
+# Calculate new version using npm version (dry-run) for preview only
 NEW_VERSION=$(npm version $VERSION_TYPE --no-git-tag-version --dry-run 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | head -1 | sed 's/^v//')
 echo "New version will be: $NEW_VERSION"
 
-# Update version in package.json and package-lock.json
+# Update version deterministically without triggering npm version lifecycle
 echo "Updating version..."
-npm version $VERSION_TYPE --no-git-tag-version
+npm pkg set version="$NEW_VERSION"
+npm install --package-lock-only >/dev/null 2>&1 || true
 
 # Read the actual new version from package.json
 NEW_VERSION=$(node -p "require('./package.json').version")
@@ -86,7 +87,7 @@ echo "Version updated to: $NEW_VERSION"
 echo "Updating oclif manifest..."
 npm run prepack
 
-# Update README with oclif
+# Update README with oclif (this is our npm script named 'version'; not 'npm version')
 echo "Updating README..."
 npm run version
 
