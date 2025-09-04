@@ -29,20 +29,7 @@ const cursor: AgentSpec = {
           }
         }
       }
-      
-      // Also create .cursorrules for backward compatibility (deprecated but still works)
-      // Combine all rules into single file for legacy support
-      const legacyContent = files
-        .filter(file => file.endsWith('.md'))
-        .map(file => readFileSync(join(sourceDir, file), 'utf8'))
-        .join('\n\n')
-      
-      writeFileSync('.cursorrules', legacyContent, 'utf8')
-      
-      if (verbose) {
-        console.log('Created .cursorrules for backward compatibility')
-        console.log('⚠️  Note: .cursorrules is deprecated and will be removed in Cursor v0.60 (Q2 2026)')
-      }
+      // No legacy `.cursorrules` file: we only support modern Cursor rules directory
     }
   },
   clean() {
@@ -56,7 +43,7 @@ const cursor: AgentSpec = {
   },
   displayName: 'Cursor IDE',
   id: 'cursor',
-  outputPaths: ['.cursor/rules/', '.cursorrules'],
+  outputPaths: ['.cursor/rules/'],
 }
 
 export default cursor

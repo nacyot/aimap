@@ -140,7 +140,7 @@ describe('RulesBuilder', () => {
     expect(existsSync('.cursor/rules')).toBe(true) // Directory should exist
     expect(existsSync('.cursor/rules/01-general.mdc')).toBe(true) // .mdc extension for 2025
     expect(existsSync('.cursor/rules/02-specific.mdc')).toBe(true)
-    expect(existsSync('.cursorrules')).toBe(true) // Legacy file for backward compatibility
+    expect(existsSync('.cursorrules')).toBe(false) // No legacy file
   })
   
   it('should generate build hash', async () => {

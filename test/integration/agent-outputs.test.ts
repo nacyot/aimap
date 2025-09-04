@@ -155,12 +155,8 @@ describe('Agent Output Validation', () => {
       const content = readFileSync('.cursor/rules/01-coding.mdc', 'utf8')
       expect(content).toBe(testRules['01-coding.md'])
       
-      // Check legacy .cursorrules file
-      expect(existsSync('.cursorrules')).toBe(true)
-      const legacyContent = readFileSync('.cursorrules', 'utf8')
-      expect(legacyContent).toContain('# Coding Standards')
-      expect(legacyContent).toContain('# Testing')
-      expect(legacyContent).toContain('# Security')
+      // Legacy .cursorrules is no longer generated
+      expect(existsSync('.cursorrules')).toBe(false)
     })
   })
   
@@ -270,7 +266,7 @@ describe('Agent Output Validation', () => {
       // Verify each agent's output
       expect(existsSync('CLAUDE.md')).toBe(true)
       expect(existsSync('.cursor/rules/01-coding.mdc')).toBe(true)
-      expect(existsSync('.cursorrules')).toBe(true)
+      expect(existsSync('.cursorrules')).toBe(false)
       expect(existsSync('.github/instructions/01-coding.instructions.md')).toBe(true)
       expect(existsSync('.amazonq/rules/01-coding.md')).toBe(true)
       expect(existsSync('.windsurfrules')).toBe(true)

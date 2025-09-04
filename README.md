@@ -80,7 +80,7 @@ outputs:
 |-------|-----|--------------|-------|
 | **Universal Agents** | `agents` | `AGENTS.md` | Combined rules for any agent |
 | **Claude Code** | `claude` | `CLAUDE.md` | Writes a bullet list of `@` references; supports `CLAUDE.tempalte.md` with `@@RULES@@` placeholder |
-| **Cursor IDE** | `cursor` | `.cursor/rules/*.mdc`, `.cursorrules` | MDC format (v0.52+) |
+| **Cursor IDE** | `cursor` | `.cursor/rules/*.mdc` | MDC format (v0.52+) |
 | **GitHub Copilot** | `copilot` | `.github/instructions/*.instructions.md` | Granular instructions |
 | **Amazon Q** | `amazonq` | `.amazonq/rules/*.md` | 32KB file limit |
 | **Aider** | `aider` | `.aider.conf.yml` | Updates read array |
