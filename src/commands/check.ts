@@ -72,8 +72,13 @@ export default class Check extends Command {
           this.log(`✅ Up-to-date. Current hash matches stored hash: ${computed}`)
         }
       }
-
-      if (flags.quiet && needsBuild) this.exit(1)
+      
+      if (flags.quiet) {
+        // Avoid throwing EEXIT inside try/catch; exit the process directly for quiet mode
+        // 0: up-to-date, 1: needs build
+        // eslint-disable-next-line n/no-process-exit
+        process.exit(needsBuild ? 1 : 0)
+      }
       // In quiet mode and up-to-date, exit 0 implicitly
     } catch (error) {
       this.error(`Failed to check build status: ${error}`, {exit: 1})
